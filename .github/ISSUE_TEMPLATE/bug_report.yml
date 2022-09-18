@@ -1,0 +1,44 @@
+name: 🐛 Bug Report
+description: Create a report to help us improve Mai
+title: 'Bug: '
+body:
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      description: Please ensure you have completed all of the following.
+      options:
+        - label: I have read the [Contributing Guidelines](https://github.com/xFGhoul/Mai/tree/dev/.github/CONTRIBUTING.md).
+          required: true
+        - label: I agree to follow the [Code of Conduct](https://github.com/xFGhoul/Mai/blob/dev/CODE_OF_CONDUCT.md).
+          required: true
+        - label: I have searched for [existing issues](https://github.com/xFGhoul/Mai/issues) that already report this problem, without success.
+          required: true
+        - label: I have checked if the issue is not labeled as 'to do' or 'done' in the [Mai Project](https://github.com/xFGhoul/Mai/projects/1).
+          required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A clear description of what the bug is and how it manifests.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A clear description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: Please explain the steps required to duplicate this issue.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Full Command String
+      description: Please send the command that was used
+      placeholder: -ban @User ...
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: List any other information that is relevant to your issue. Stack traces, related issues, suggestions on how to fix, Stack Overflow links, etc.

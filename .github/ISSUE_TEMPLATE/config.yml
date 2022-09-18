@@ -1,0 +1,12 @@
+contact_links:
+  - name: 📚 Documentation
+    url: https://xfghoul.github.io/Mai/
+    about: Before Making An Issue, Make Sure To Check The Documentation
+
+  - name: 📚 Developer Documentation
+    url: https://github.com/xFGhoul/Mai/blob/dev/.github/CONTRIBUTING.md
+    about: Make Sure To Check The Developer Documentation If This Issue Is Focused On Code
+
+  - name: 🤔 Support Question
+    url: https://discord.gg/AZQpDFFtqK
+    about: Ask Questions At Our Discord If The Documentation Was Not Of Any Help
