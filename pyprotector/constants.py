@@ -68,4 +68,31 @@ class Lists:
             "ksdumper.exe",
             "joeboxserver.exe"
         ]
-    BLACKLISTED_DLLS = ["sbiedll.dll","api_log.dll","dir_watch.dll","pstorec.dll","vmcheck.dll","wpespy.dll"]
+    BLACKLISTED_DLLS: Final[List[str]] = [
+        "sbiedll.dll",
+        "api_log.dll",
+        "dir_watch.dll",
+        "pstorec.dll",
+        "vmcheck.dll",
+        "wpespy.dll"
+        ]
+    VIRTUAL_MACHINE_PROCESSES: Final[List[str]] = [
+        "xenservice.exe",
+        "VMSrvc.exe",
+        "VMUSrvc.exe",
+        "VMwareService.exe",
+        "VMwareTray.exe",
+        "vboxservice.exe",
+        "vboxtray.exe",
+        "qemu-ga.exe",
+        "vdagent.exe",
+        "vdservice.exe"
+    ]
+    BLACKLISTED_WINDOW_NAMES: Final[List[str]] = [
+        "IDA: Quick start",
+        "VBoxTrayToolWndClass",
+        "VBoxTrayToolWnd",
+        
+        
+    ]
+    

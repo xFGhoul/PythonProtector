@@ -17,7 +17,7 @@ from .constants import ProtectorInfo
 from .modules.antiprocess import AntiProcess
 from .modules.antivm import AntiVM
 from .modules.miscellaneous import Miscellanoeus
-from .modules.dlls import AntiDLL
+from .modules.dll import AntiDLL
 
 class PythonProtector:
     def __init__(self, debug: bool, logs_path: Union[Path, str], webhook_url: str):
@@ -81,7 +81,8 @@ class PythonProtector:
             self.logger.info("Miscellaneous Thread Started")
             
             self.logger.info("Starting Anti Process Thread")
-            Thread(name="Anti Process", target=self.anti_process.CheckProcessList).start()
+            Thread(name="Anti Process List", target=self.anti_process.CheckProcessList).start()
+            Thread(name="Anti Window Names", target=self.anti_process.CheckWindowNames).start()
             self.logger.info("Anti Process Thread Started")
             
             self.logger.info("Starting Anti DLL Thread")

