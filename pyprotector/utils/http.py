@@ -2,7 +2,7 @@ import httpx
 
 def get_ip_address() -> str:
     data = httpx.get("https://ipinfo.io/json").json()
-    ip = data.get('ip')
+    ip = data.get("ip")
     return ip
 
 def hasInternet() -> bool:
