@@ -18,7 +18,7 @@ setup(
     long_description=README + '\n\n' + HISTORY,
     license='MIT',
     keywords=["keyauth", "protection", "protect", "obfuscate", "WMI"],  
-    install_requires=["aiohttp", "humanize", "loguru", "discord-webhook", "py-cpuinfo", "command_runner", "pyarmor", "pyarmor-webui"],
+    install_requires=["humanize", "loguru", "discord-webhook", "py-cpuinfo", "command_runner", "psutil", "httpx", "WMI", "pywin32"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
