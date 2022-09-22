@@ -1,5 +1,3 @@
 from .protector import PythonProtector
 
-__all__ = [
-    "PythonProtector"
-]
+__all__ = ["PythonProtector"]

@@ -16,66 +16,75 @@ class UserInfo:
     USERNAME: Final[str] = os.getlogin()
     PC_NAME: Final[str] = os.getenv("COMPUTERNAME")
     IP: Final[str] = get_ip_address()
-    HWID: Final[str] = subprocess.check_output('wmic csproduct get uuid').decode().split('\n')[1].strip()
-    MAC: Final[str] = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
+    HWID: Final[str] = (
+        subprocess.check_output("wmic csproduct get uuid")
+        .decode()
+        .split("\n")[1]
+        .strip()
+    )
+    MAC: Final[str] = ":".join(re.findall("..", "%012x" % uuid.getnode()))
     GPU: Final[str] = computer.Win32_VideoController()[0].Name
-    
+
+
 @final
 class ProtectorInfo:
     VERSION: Final[str] = "1.0"
     ROOT_PATH = os.path.abspath(os.curdir)
-    
+
 
 @final
 class EmbedConfig:
     COLOR: Final[str] = "5865F2"
     TITLE: Final[str] = "PythonProtector - 1.0"
     VERSION: Final[str] = "1.0"
-    ICON: Final[str] = "https://thereisabotforthat-storage.s3.amazonaws.com/1548526271231_security%20bot%20logo.png"
-    
+    ICON: Final[
+        str
+    ] = "https://thereisabotforthat-storage.s3.amazonaws.com/1548526271231_security%20bot%20logo.png"
+
+
 @final
 class Lists:
     BLACKLISTED_PROGRAMS: Final[List[str]] = [
-        "httpdebuggerui.exe", 
-        "wireshark.exe", 
-        "HTTPDebuggerSvc.exe", 
-        "fiddler.exe", 
-        "regedit.exe", 
-        "taskmgr.exe", 
-        "vboxservice.exe", 
-        "df5serv.exe", 
-        "processhacker.exe", 
-        "vboxtray.exe", 
-        "vmtoolsd.exe", 
+        "httpdebuggerui.exe",
+        "wireshark.exe",
+        "HTTPDebuggerSvc.exe",
+        "fiddler.exe",
+        "regedit.exe",
+        "taskmgr.exe",
+        "vboxservice.exe",
+        "df5serv.exe",
+        "processhacker.exe",
+        "vboxtray.exe",
+        "vmtoolsd.exe",
         "vmwaretray.exe",
         "ida.exe",
-        "ida64.exe", 
+        "ida64.exe",
         "ollydbg.exe",
-        "pestudio.exe", 
-        "vmwareuser", 
-        "vgauthservice.exe", 
-        "vmacthlp.exe", 
-        "x96dbg.exe", 
-        "vmsrvc.exe", 
-        "x32dbg.exe", 
-        "vmusrvc.exe", 
-        "prl_cc.exe", 
-        "prl_tools.exe", 
-        "xenservice.exe", 
-        "qemu-ga.exe", 
-        "joeboxcontrol.exe", 
-        "ksdumperclient.exe", 
+        "pestudio.exe",
+        "vmwareuser",
+        "vgauthservice.exe",
+        "vmacthlp.exe",
+        "x96dbg.exe",
+        "vmsrvc.exe",
+        "x32dbg.exe",
+        "vmusrvc.exe",
+        "prl_cc.exe",
+        "prl_tools.exe",
+        "xenservice.exe",
+        "qemu-ga.exe",
+        "joeboxcontrol.exe",
+        "ksdumperclient.exe",
         "ksdumper.exe",
-        "joeboxserver.exe"
-        ]
+        "joeboxserver.exe",
+    ]
     BLACKLISTED_DLLS: Final[List[str]] = [
         "sbiedll.dll",
         "api_log.dll",
         "dir_watch.dll",
         "pstorec.dll",
         "vmcheck.dll",
-        "wpespy.dll"
-        ]
+        "wpespy.dll",
+    ]
     VIRTUAL_MACHINE_PROCESSES: Final[List[str]] = [
         "xenservice.exe",
         "VMSrvc.exe",
@@ -86,20 +95,20 @@ class Lists:
         "vboxtray.exe",
         "qemu-ga.exe",
         "vdagent.exe",
-        "vdservice.exe"
+        "vdservice.exe",
     ]
     BLACKLISTED_WINDOW_NAMES: Final[List[str]] = [
         "IDA: Quick start",
         "VBoxTrayToolWndClass",
         "VBoxTrayToolWnd",
-        "proxifier", 
+        "proxifier",
         "graywolf",
         "extremedumper",
         "zed",
         "exeinfope",
         "dnspy",
         "titanHide",
-        "ilspy", 
+        "ilspy",
         "titanhide",
         "x32dbg",
         "codecracker",
@@ -107,12 +116,12 @@ class Lists:
         "process hacker 2",
         "pc-ret",
         "http debugger",
-        "Centos", 
+        "Centos",
         "process monitor",
-        "debug", 
+        "debug",
         "ILSpy",
         "reverse",
-        "simpleassemblyexplorer", 
+        "simpleassemblyexplorer",
         "process",
         "de4dotmodded",
         "dojandqwklndoqwd-x86",
@@ -138,31 +147,31 @@ class Lists:
         "petools",
         "scyllahide",
         "megadumper",
-        "reversal", 
+        "reversal",
         "ksdumper v1.1 - by equifox",
         "dbgclr",
         "HxD",
         "monitor",
-        "peek", 
+        "peek",
         "ollydbg",
         "ksdumper",
         "http",
         "wpe pro",
         "dbg",
         "httpanalyzer",
-        "httpdebug", 
-        "PhantOm", 
-        "kgdb", 
-        "james", 
+        "httpdebug",
+        "PhantOm",
+        "kgdb",
+        "james",
         "x32_dbg",
         "proxy",
-        "phantom", 
-        "mdbg", 
+        "phantom",
+        "mdbg",
         "WPE PRO",
         "system explorer",
         "de4dot",
         "x64dbg",
-        "X64NetDumper", 
+        "X64NetDumper",
         "protection_id",
         "charles",
         "systemexplorer",
@@ -171,31 +180,27 @@ class Lists:
         "procmon64",
         "MegaDumper",
         "ghidra",
-        "xd", 
+        "xd",
         "0harmony",
         "dojandqwklndoqwd",
-        "hacker", 
+        "hacker",
         "process hacker",
         "SAE",
         "mdb",
         "checker",
         "harmony",
-        "Protection_ID", 
+        "Protection_ID",
         "PETools",
         "scyllaHide",
         "x96dbg",
         "systemexplorerservice",
         "folder",
         "mitmproxy",
-        "dbx", 
+        "dbx",
         "sniffer",
-        "http toolkit"
+        "http toolkit",
     ]
-    BLACKLISTED_PATHS: Final[List[str]] = [
-        r"D:\Tools",
-        r"D:\OS2",
-        r"D:\NT3X"
-    ]
+    BLACKLISTED_PATHS: Final[List[str]] = [r"D:\Tools", r"D:\OS2", r"D:\NT3X"]
     BLACKLISTED_IPS: Final[list[str]] = [
         "None",
         "88.132.231.71",
@@ -260,4 +265,4 @@ class Lists:
         "35.192.93.107",
         "213.33.190.22",
         "194.154.78.152",
-            ]
+    ]
