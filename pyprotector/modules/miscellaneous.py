@@ -1,3 +1,14 @@
+"""
+    ____          ____                __               __
+   / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
+  / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
+ / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
+/_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
+       /____/
+
+Made With ❤️ By Ghoul & Marci
+"""
+
 import ctypes
 import os
 import sys
@@ -104,20 +115,23 @@ class Miscellanoeus:
                 if dist:
                     self.logger.info(f"{package} Was Found Installed")
                     self.webhook.send(
-                    f"`{package}` Was Found Installed On User Machine",
-                    "Miscellaneous")
+                        f"`{package}` Was Found Installed On User Machine",
+                        "Miscellaneous",
+                    )
                     os._exit(1)
                 else:
                     pass
             except pkg_resources.DistributionNotFound:
                 pass
-    
+
     def CheckOutPutDebugString(self):
         win32api.SetLastError(0)
         win32api.OutputDebugString("PythonProtector Intruding...")
         if win32api.GetLastError() != 0:
             self.logger.info("OutputDebugString Is Not 0")
-            self.webhook.send("OutputDebugString Not Equal To 0", "Miscellaneous")
+            self.webhook.send(
+                "OutputDebugString Not Equal To 0",
+                "Miscellaneous")
             os._exit(1)
 
     def CheckIPs(self):
@@ -141,7 +155,7 @@ class Miscellanoeus:
                 os._exit(1)
         except BaseException:
             pass
-        
+
     def StartChecks(self):
         self.logger.info("Starting Miscellaneous Checks")
         self.CheckImports()

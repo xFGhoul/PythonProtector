@@ -1,3 +1,14 @@
+"""
+    ____          ____                __               __
+   / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
+  / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
+ / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
+/_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
+       /____/
+
+Made With ❤️ By Ghoul & Marci
+"""
+
 import os
 import time
 
@@ -39,7 +50,9 @@ class AntiDLL:
                     except BaseException:
                         pass
                 if EvidenceOfSandbox:
-                    self.logger.info(f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded")
+                    self.logger.info(
+                        f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded"
+                    )
                     self.webhook.send(
                         f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
                         "Anti DLL",

@@ -1,3 +1,14 @@
+"""
+    ____          ____                __               __
+   / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
+  / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
+ / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
+/_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
+       /____/
+
+Made With ❤️ By Ghoul & Marci
+"""
+
 import os
 import time
 
@@ -25,7 +36,8 @@ class AntiProcess:
                         for procstr in Lists.BLACKLISTED_PROGRAMS
                     ):
                         try:
-                            self.logger.info(f"{proc.name} Process Was Running")
+                            self.logger.info(
+                                f"{proc.name} Process Was Running")
                             self.webhook.send(
                                 f"Anti-Debug Program: `{proc.name()}` was detected running on the system.",
                                 "Anti Process",
