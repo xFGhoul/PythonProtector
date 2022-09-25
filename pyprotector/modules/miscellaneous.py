@@ -23,6 +23,7 @@ class Miscellanoeus:
             try:
                 time.sleep(5)
                 if hasInternet() == False:
+                    self.logger.info("CheckInternet Failed")
                     os._exit(1)
                 else:
                     pass
@@ -32,8 +33,9 @@ class Miscellanoeus:
     def CheckRam(self):
         memory = psutil.virtual_memory().total
         if memory <= 4294967296:
+            self.logger.info("RAM Check Failed")
             self.webhook.send(
-                f"Ram Check: Less than 4 GB of RAM exists on this system",
+                f"RAM Check: Less than 4 GB of RAM exists on this system",
                 "Miscellaneous",
             )
             os._exit(1)
@@ -42,6 +44,7 @@ class Miscellanoeus:
         isDebuggerPresent = ctypes.windll.kernel32.IsDebuggerPresent()
 
         if isDebuggerPresent:
+            self.logger.send("IsDebuggerPresent Returned True")
             self.webhook.send(
                 f"IsDebuggerPresent: A debugger is present, exiting program...",
                 "Miscellaneous",
@@ -54,6 +57,7 @@ class Miscellanoeus:
             )
             != 0
         ):
+            self.logger.send("CheckRemoteDebuggerPresent Returned True")
             self.webhook.send(
                 "CheckRemoteDebuggerPresent: A debugger is present, exiting program...",
                 "Miscellaneous",
@@ -68,22 +72,26 @@ class Miscellanoeus:
         diskSizeGB = diskSizeBytes / 1073741824
 
         if diskSizeGB < minDiskSizeGB:
+            self.logger.info("Disk Check Failed")
             self.webhook.send(
                 f"Disk Check: The disk size of this host is {diskSizeGB} GB, which is less than the minimum {minDiskSizeGB} GB"
             )
             os._exit(1)
 
     def KillTasks(self):
+        self.logger.info("Killing Tasks")
         os.system("taskkill /f /im HTTPDebuggerUI.exe >nul 2>&1")
         os.system("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1")
         os.system("sc stop HTTPDebuggerPro >nul 2>&1")
         os.system(
             'cmd.exe /c @RD /S /Q "C:\\Users\\%username%\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE" >nul 2>&1'
         )
+        self.logger.info("All Tasks Killed")
 
     def CheckPaths(self):
         for path in Lists.BLACKLISTED_PATHS:
             if os.path.exists(path):
+                self.logger.info("Blacklisted Path Found")
                 self.webhook.send("Blacklisted Path Found", "Miscellaneous")
                 os._exit(1)
             else:
@@ -94,7 +102,7 @@ class Miscellanoeus:
             try:
                 dist = pkg_resources.get_distribution(package)
                 if dist:
-                    self.logger.info(f"{package} Was Found Installed: Exit Status 1")
+                    self.logger.info(f"{package} Was Found Installed")
                     self.webhook.send(
                     f"`{package}` Was Found Installed On User Machine",
                     "Miscellaneous")
@@ -103,9 +111,18 @@ class Miscellanoeus:
                     pass
             except pkg_resources.DistributionNotFound:
                 pass
+    
+    def CheckOutPutDebugString(self):
+        win32api.SetLastError(0)
+        win32api.OutputDebugString("PythonProtector Intruding...")
+        if win32api.GetLastError() != 0:
+            self.logger.info("OutputDebugString Is Not 0")
+            self.webhook.send("OutputDebugString Not Equal To 0", "Miscellaneous")
+            os._exit(1)
 
     def CheckIPs(self):
         if UserInfo.IP in Lists.BLACKLISTED_IPS:
+            self.logger.info(f"{UserInfo.IP} Is A Blacklisted IP Address")
             self.webhook.send(
                 f"`{UserInfo.IP}` Is A Blacklisted IP Address", "Miscellaneous"
             )
@@ -114,30 +131,26 @@ class Miscellanoeus:
             pass
 
     # Thanks Tekky
-    def CheckSpecs(self):
+    def CheckCPUCores(self):
         try:
-            DISK = str(psutil.disk_usage("/")[0] / 1024**3).split(".")[0]
-
-            if int(DISK) <= 50:
-                self.webhook.send(
-                    f"`{DISK}` Disk Size Is Blacklisted",
-                    "Miscellaneous")
-                os._exit(1)
             if int(psutil.cpu_count()) <= 1:
+                self.logger.info(f"CPU Core Count Is Less Than Or Equal To 1")
                 self.webhook.send(
                     f"CPU Core Count Is Less Than Or Equal To `1`",
                     "Miscellaneous")
                 os._exit(1)
         except BaseException:
             pass
-
+        
     def StartChecks(self):
+        self.logger.info("Starting Miscellaneous Checks")
         self.CheckImports()
         self.CheckPaths()
         self.CheckIPs()
-        self.CheckSpecs()
+        self.CheckCPUCores()
         self.CheckRam()
         self.CheckIsDebuggerPresent()
+        self.CheckOutPutDebugString()
         self.CheckDiskSize()
         self.KillTasks()
 

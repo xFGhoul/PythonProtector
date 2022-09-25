@@ -66,6 +66,9 @@ class PythonProtector:
         # -- Check If Windows Platform
         if sys.platform != "win32":
             os._exit(1)
+            
+        if platform.python_version_tuple()[1] != 10:
+            raise DeprecationWarning("Python Is Not 3.10+")
 
         # -- Start Main Program
         if self.debug:
@@ -108,3 +111,9 @@ class PythonProtector:
             self.logger.info("Starting Anti VM Thread")
             Thread(name="Anti VM", target=self.anti_vm.StartChecks).start()
             self.logger.info("Anti VM Thread Started")
+        else:
+            Thread(name="Miscellaneous", target=self.misceallneous.StartChecks).start()
+            Thread(name="Anti Process List", target=self.anti_process.CheckProcessList).start()
+            Thread(name="Anti Window Names", target=self.anti_process.CheckWindowNames).start()
+            Thread(name="Anti DLL", target=self.anti_dll.BlockDLLs).start()
+            Thread(name="Anti VM", target=self.anti_vm.StartChecks).start()

