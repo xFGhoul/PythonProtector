@@ -1,10 +1,10 @@
 import os
 import re
-import wmi
-import uuid
 import subprocess
-
+import uuid
 from typing import Final, List, final
+
+import wmi
 
 from .utils.http import get_ip_address
 
@@ -265,4 +265,12 @@ class Lists:
         "35.192.93.107",
         "213.33.190.22",
         "194.154.78.152",
+    ]
+    BLACKLISTED_IMPORTS: Final[List[str]] = [
+        "pydecipher",
+        "unpy2exe",
+        "uncompyle6",
+        "pefile",
+        "marshal",
+        "unpy2exe",
     ]

@@ -1,27 +1,28 @@
 import os
-import sys
 import platform
-import cpuinfo
-
-from threading import Thread
+import sys
 from pathlib import Path
+from threading import Thread
+from typing import Dict, Union
 
-from typing import Union, Dict
+import cpuinfo
+from command_runner.elevate import is_admin
 from loguru import logger
 
-from command_runner.elevate import is_admin
-
-from .utils.webhook import Webhook
 from .constants import ProtectorInfo
-
 from .modules.antiprocess import AntiProcess
 from .modules.antivm import AntiVM
-from .modules.miscellaneous import Miscellanoeus
 from .modules.dll import AntiDLL
+from .modules.miscellaneous import Miscellanoeus
+from .utils.webhook import Webhook
 
 
 class PythonProtector:
-    def __init__(self, debug: bool, logs_path: Union[Path, str], webhook_url: str):
+    def __init__(self,
+                 debug: bool,
+                 logs_path: Union[Path,
+                                  str],
+                 webhook_url: str):
         # -- Intialize Logging
         self.debug = debug
         self.logs_path = logs_path
@@ -50,10 +51,10 @@ class PythonProtector:
         self.logger = logger
 
         # -- Initialize Modules
-        self.misceallneous = Miscellanoeus(self.webhook_url)
-        self.anti_process = AntiProcess(self.webhook_url)
-        self.anti_dll = AntiDLL(self.webhook_url)
-        self.anti_vm = AntiVM(self.webhook_url)
+        self.misceallneous = Miscellanoeus(self.webhook_url, self.logger)
+        self.anti_process = AntiProcess(self.webhook_url, self.logger)
+        self.anti_dll = AntiDLL(self.webhook_url, self.logger)
+        self.anti_vm = AntiVM(self.webhook_url, self.logger)
 
         # -- Debug Checks
         if self.debug:
@@ -68,7 +69,6 @@ class PythonProtector:
 
         # -- Start Main Program
         if self.debug:
-            self.webhook.send("PythonProtector Has Started", "Initilization")
             self.logger.info("PythonProtector Starting")
 
             self.logger.info(f"Version: {ProtectorInfo.VERSION}")
@@ -89,16 +89,16 @@ class PythonProtector:
             self.logger.info("Starting Services")
 
             self.logger.info("Starting Miscellaneous Thread")
-            Thread(name="Miscellaneous", target=self.misceallneous.StartChecks).start()
+            Thread(
+                name="Miscellaneous",
+                target=self.misceallneous.StartChecks).start()
             self.logger.info("Miscellaneous Thread Started")
 
             self.logger.info("Starting Anti Process Thread")
-            Thread(
-                name="Anti Process List", target=self.anti_process.CheckProcessList
-            ).start()
-            Thread(
-                name="Anti Window Names", target=self.anti_process.CheckWindowNames
-            ).start()
+            Thread(name="Anti Process List",
+                   target=self.anti_process.CheckProcessList).start()
+            Thread(name="Anti Window Names",
+                   target=self.anti_process.CheckWindowNames).start()
             self.logger.info("Anti Process Thread Started")
 
             self.logger.info("Starting Anti DLL Thread")

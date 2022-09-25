@@ -1,6 +1,6 @@
-from discord_webhook import DiscordWebhook, DiscordEmbed
+from discord_webhook import DiscordEmbed, DiscordWebhook
 
-from ..constants import UserInfo, EmbedConfig
+from ..constants import EmbedConfig, UserInfo
 
 
 class Webhook:
@@ -12,7 +12,10 @@ class Webhook:
 
         embed = DiscordEmbed(title=EmbedConfig.TITLE, color=EmbedConfig.COLOR)
 
-        embed.add_embed_field(name="User", value=UserInfo.USERNAME, inline=True)
+        embed.add_embed_field(
+            name="User",
+            value=UserInfo.USERNAME,
+            inline=True)
         embed.add_embed_field(name="IP", value=UserInfo.IP, inline=True)
         embed.add_embed_field(name="Module", value=module, inline=True)
 
@@ -21,8 +24,8 @@ class Webhook:
 
         embed.set_thumbnail(url=EmbedConfig.ICON)
         embed.set_footer(
-            text=f"PythonProtector | {EmbedConfig.VERSION}", icon_url=EmbedConfig.ICON
-        )
+            text=f"PythonProtector | {EmbedConfig.VERSION}",
+            icon_url=EmbedConfig.ICON)
 
         webhook.add_embed(embed)
 

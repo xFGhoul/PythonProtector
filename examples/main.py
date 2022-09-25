@@ -1,7 +1,7 @@
-from pyprotector import PythonProtector
-
 from pathlib import Path
 from threading import Thread
+
+from pyprotector import PythonProtector
 
 # -- Define Constants
 LOGGING_PATH = (
