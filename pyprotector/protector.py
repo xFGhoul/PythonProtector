@@ -67,7 +67,7 @@ class PythonProtector:
         if sys.platform != "win32":
             os._exit(1)
             
-        if platform.python_version_tuple()[1] != 10:
+        if platform.python_version_tuple()[1] != "10":
             raise DeprecationWarning("Python Is Not 3.10+")
 
         # -- Start Main Program
