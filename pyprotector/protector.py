@@ -21,8 +21,8 @@ from command_runner.elevate import is_admin
 from loguru import logger
 
 from .constants import ProtectorInfo
-from .modules.antiprocess import AntiProcess
-from .modules.antivm import AntiVM
+from .modules.process import AntiProcess
+from .modules.vm import AntiVM
 from .modules.dll import AntiDLL
 from .modules.miscellaneous import Miscellanoeus
 from .utils.webhook import Webhook
@@ -78,7 +78,7 @@ class PythonProtector:
         if sys.platform != "win32":
             os._exit(1)
 
-        if platform.python_version_tuple()[1] != "10":
+        if platform.python_version_tuple()[1] <= "10":
             raise DeprecationWarning("Python Is Not 3.10+")
 
         # -- Start Main Program

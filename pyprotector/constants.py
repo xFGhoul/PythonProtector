@@ -46,8 +46,8 @@ class ProtectorInfo:
 @final
 class EmbedConfig:
     COLOR: Final[str] = "5865F2"
-    TITLE: Final[str] = "PythonProtector - 1.0"
-    VERSION: Final[str] = "1.0"
+    TITLE: Final[str] = f"PythonProtector - {ProtectorInfo.VERSION}"
+    VERSION: Final[str] = ProtectorInfo.VERSION
     ICON: Final[
         str
     ] = "https://thereisabotforthat-storage.s3.amazonaws.com/1548526271231_security%20bot%20logo.png"
@@ -95,6 +95,9 @@ class Lists:
         "pstorec.dll",
         "vmcheck.dll",
         "wpespy.dll",
+        "crack.dll",
+        "cheat.dll",
+        "bypass.dll"
     ]
     VIRTUAL_MACHINE_PROCESSES: Final[List[str]] = [
         "xenservice.exe",
@@ -284,4 +287,6 @@ class Lists:
         "pefile",
         "marshal",
         "unpy2exe",
+	    "pyarmor",
+	    "pyarmor-webui"
     ]
