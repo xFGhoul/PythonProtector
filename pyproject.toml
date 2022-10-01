@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pythonprotector"
+version = "0.1.0"
+description = "Protecting Your Python Files"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+command-runner = "^1.4.0"
+discord-webhook = {url = "https://files.pythonhosted.org/packages/a2/78/2b6329583e28cd222499009bbe4d81c6ec583b7ff62f29adbe01917e3343/discord-webhook-0.17.0.tar.gz"}
+httpx = "^0.23.0"
+loguru = "^0.6.0"
+psutil = "^5.9.2"
+py-cpuinfo = {url = "https://files.pythonhosted.org/packages/e6/ba/77120e44cbe9719152415b97d5bfb29f4053ee987d6cb63f55ce7d50fadc/py-cpuinfo-8.0.0.tar.gz"}
+pywin32 = "^304"
+WMI = "^1.5.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
