@@ -12,11 +12,12 @@ Made With ❤️ By Ghoul & Marci
 import os
 import platform
 import sys
+
+import cpuinfo
 from pathlib import Path
 from threading import Thread
 from typing import Dict, Union
 
-import cpuinfo
 from command_runner.elevate import is_admin
 from loguru import logger
 
@@ -29,14 +30,12 @@ from .utils.webhook import Webhook
 
 
 class PythonProtector:
-    def __init__(self,
-                 debug: bool,
-                 logs_path: Union[Path,
-                                  str],
-                 webhook_url: str):
+    def __init__(self, debug: bool, logs_path: Union[Path, str], webhook_url: str):
+        
         # -- Intialize Logging
         self.debug = debug
         self.logs_path = logs_path
+        self.logger = logger
 
         LOGGING_CONFIG: Dict = {
             "handlers": [
@@ -45,6 +44,7 @@ class PythonProtector:
                     "format": "[{time:YYYY-MM-DD HH:mm:ss}] {module}::{function}({line}) - {message}",
                     "enqueue": True,
                     "rotation": "daily",
+                    "mode": "w",
                     "level": "INFO",
                     "serialize": False,
                     "backtrace": False,
@@ -52,14 +52,11 @@ class PythonProtector:
                 },
             ],
         }
-        logger.configure(**LOGGING_CONFIG)
+        self.logger.configure(**LOGGING_CONFIG)
 
         # -- Initialize Webhooks
         self.webhook_url = webhook_url
         self.webhook = Webhook(self.webhook_url)
-
-        # -- Naming Convention
-        self.logger = logger
 
         # -- Initialize Modules
         self.misceallneous = Miscellanoeus(self.webhook_url, self.logger)

@@ -13,11 +13,6 @@ black .
 
 echo -------------------------------------
 
-isort .
-
-
-echo -------------------------------------
-
 autopep8 --in-place --aggressive --aggressive --recursive .
 
 

@@ -10,12 +10,11 @@ Made With ❤️ By Ghoul & Marci
 """
 
 import ctypes
+import httpx
 import os
 import re
 import sys
 import uuid
-
-import httpx
 
 from ..constants import Lists, UserInfo
 from ..utils.webhook import Webhook

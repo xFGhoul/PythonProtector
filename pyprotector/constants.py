@@ -11,11 +11,11 @@ Made With ❤️ By Ghoul & Marci
 
 import os
 import re
+import wmi
 import subprocess
 import uuid
-from typing import Final, List, final
 
-import wmi
+from typing import Final, List, final
 
 from .utils.http import get_ip_address
 
