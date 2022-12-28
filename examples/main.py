@@ -20,7 +20,7 @@ LOGGING_PATH = (
 )  # -- This can be renamed
 
 # -- Construct Class
-security = PythonProtector(debug=True, logs_path=LOGGING_PATH, webhook_url="")
+security = PythonProtector(debug=True, modules=["AntiProcess", "AntiVM", "Miscellaneous"], logs_path=LOGGING_PATH, webhook_url="", should_exit=True)
 
 # -- Main Code
 if __name__ == "__main__":

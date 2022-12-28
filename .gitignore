@@ -130,6 +130,7 @@ dmypy.json
 
 # Internal Testing
 _testing.py
+logs/
 
 # Poetry
 poetry.lock

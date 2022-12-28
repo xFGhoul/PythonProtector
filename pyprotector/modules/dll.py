@@ -20,10 +20,11 @@ from ..utils.webhook import Webhook
 
 
 class AntiDLL:
-    def __init__(self, webhook_url: str, logger):
+    def __init__(self, webhook_url: str, logger, should_exit):
         self.webhook_url = webhook_url
         self.logger = logger
         self.webhook = Webhook(self.webhook_url)
+        self.should_exit = should_exit
 
     def BlockDLLs(self) -> None:
         while True:
@@ -57,6 +58,7 @@ class AntiDLL:
                         f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
                         "Anti DLL",
                     )
-                    os._exit(1)
+                    if self.should_exit:
+                        os._exit(1)
             except BaseException:
                 pass

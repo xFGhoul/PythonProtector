@@ -15,7 +15,7 @@ import wmi
 import subprocess
 import uuid
 
-from typing import Final, List, final
+from typing import Final, List, Set, final
 
 from .utils.http import get_ip_address
 
@@ -288,5 +288,10 @@ class Lists:
         "marshal",
         "unpy2exe",
 	    "pyarmor",
-	    "pyarmor-webui"
+	    "pyarmor-webui",
+        "pyinject"
     ]
+
+@final
+class Valid:
+    Modules: Final[Set[str]] = {"Miscellaneous", "AntiProcess", "AntiDLL", "AntiVM"}
