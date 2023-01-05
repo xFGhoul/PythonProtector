@@ -9,11 +9,17 @@
 Made With ❤️ By Ghoul & Marci
 """
 
+
 class ModulesNotValid(Exception):
     def __init__(self, message: str) -> None:
         super().__init__(message)
-        
+
+
+class DetectionsNotValid(Exception):
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
 class LogsPathEmpty(Exception):
     def __init__(self, message: str) -> None:
         super().__init__(message)
-        

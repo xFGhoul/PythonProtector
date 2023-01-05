@@ -15,7 +15,10 @@ import wmi
 import subprocess
 import uuid
 
+
 from typing import Final, List, Set, final
+from cryptography.fernet import Fernet
+from base64 import b64encode
 
 from .utils.http import get_ip_address
 
@@ -38,9 +41,21 @@ class UserInfo:
 
 
 @final
+class LoggingInfo:
+    KEY: bytes = Fernet.generate_key()
+    CIPHER = Fernet(KEY)
+
+    def encrypted_formatter(record):
+        encrypted = LoggingInfo.CIPHER.encrypt(
+            record["message"].encode("utf8"))
+        record["extra"]["encrypted"] = b64encode(encrypted).decode("latin1")
+        return "[{time:YYYY-MM-DD HH:mm:ss}] {module}::{function}({line}) - {extra[encrypted]}\n{exception}"
+
+
+@final
 class ProtectorInfo:
-    VERSION: Final[str] = "1.0"
-    ROOT_PATH = os.path.abspath(os.curdir)
+    VERSION: Final[str] = "1.5"
+    ROOT_PATH: str = os.path.abspath(os.curdir)
 
 
 @final
@@ -97,7 +112,7 @@ class Lists:
         "wpespy.dll",
         "crack.dll",
         "cheat.dll",
-        "bypass.dll"
+        "bypass.dll",
     ]
     VIRTUAL_MACHINE_PROCESSES: Final[List[str]] = [
         "xenservice.exe",
@@ -287,11 +302,21 @@ class Lists:
         "pefile",
         "marshal",
         "unpy2exe",
-	    "pyarmor",
-	    "pyarmor-webui",
-        "pyinject"
+        "pyarmor",
+        "pyarmor-webui",
+        "pyinject",
     ]
+    PROXY_IPS: Final[List[str]] = ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
+    PROXY_HEADERS: Final[List[str]] = ["Via", "Forwarded", "X-Forwarded-For"]
+
 
 @final
 class Valid:
-    Modules: Final[Set[str]] = {"Miscellaneous", "AntiProcess", "AntiDLL", "AntiVM"}
+    Modules: Final[Set[str]] = {
+        "Miscellaneous",
+        "AntiProcess",
+        "AntiDLL",
+        "AntiVM",
+        "AntiAnalysis",
+    }
+    Detections: Final[Set[str]] = {"Screenshot", "Exit", "Report"}

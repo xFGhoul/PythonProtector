@@ -15,31 +15,38 @@ import time
 import win32api
 import win32process
 
+from typing import Any
+
 from ..constants import Lists
 from ..utils.webhook import Webhook
 
 
 class AntiDLL:
-    def __init__(self, webhook_url: str, logger, should_exit):
-        self.webhook_url = webhook_url
-        self.logger = logger
-        self.webhook = Webhook(self.webhook_url)
-        self.should_exit = should_exit
+    def __init__(
+            self,
+            webhook: Webhook,
+            logger: Any,
+            exit: bool,
+            report: bool) -> None:
+        self.webhook: Webhook = webhook
+        self.logger: Any = logger
+        self.exit: bool = exit
+        self.report: bool = report
 
     def BlockDLLs(self) -> None:
         while True:
             try:
                 time.sleep(1)
                 EvidenceOfSandbox = []
-                allPids = win32process.EnumProcesses()
+                allPids: tuple = win32process.EnumProcesses()
                 for pid in allPids:
                     try:
-                        hProcess = win32api.OpenProcess(0x0410, 0, pid)
+                        hProcess: int = win32api.OpenProcess(0x0410, 0, pid)
                         try:
-                            curProcessDLLs = win32process.EnumProcessModules(
+                            curProcessDLLs: tuple = win32process.EnumProcessModules(
                                 hProcess)
                             for dll in curProcessDLLs:
-                                dllName = str(
+                                dllName: str = str(
                                     win32process.GetModuleFileNameEx(
                                         hProcess, dll)).lower()
                                 for sandboxDLL in Lists.BLACKLISTED_DLLS:
@@ -54,11 +61,12 @@ class AntiDLL:
                     self.logger.info(
                         f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded"
                     )
-                    self.webhook.send(
-                        f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
-                        "Anti DLL",
-                    )
-                    if self.should_exit:
+                    if self.report:
+                        self.webhook.send(
+                            f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
+                            "Anti DLL",
+                        )
+                    if self.exit:
                         os._exit(1)
             except BaseException:
                 pass

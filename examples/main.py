@@ -16,11 +16,25 @@ from pyprotector import PythonProtector
 
 # -- Define Constants
 LOGGING_PATH = (
-    Path.home() / "AppData/Roaming/PythonProtector/logs/[Security]-{time:D-M-YY}.log"
-)  # -- This can be renamed
+    Path.home() / "AppData/Roaming/PythonProtector/logs/[Security].log"
+)  # -- This can be any path
 
 # -- Construct Class
-security = PythonProtector(debug=True, modules=["AntiProcess", "AntiVM", "Miscellaneous"], logs_path=LOGGING_PATH, webhook_url="", should_exit=True)
+security = PythonProtector(
+    debug=True,
+    modules=[
+        "AntiProcess",
+        "AntiVM",
+        "Miscellaneous",
+        "AntiDLL",
+        "AntiAnalysis"],
+    logs_path=LOGGING_PATH,
+    webhook_url="",
+    on_detect=[
+        "Report",
+        "Exit",
+        "Screenshot"],
+)
 
 # -- Main Code
 if __name__ == "__main__":

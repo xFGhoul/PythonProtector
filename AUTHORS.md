@@ -1,6 +1,6 @@
 # Ghoul
 
-Discord - `ghoul#0002`
+Discord - `ghoul#1337`
 
 # Marci
 
