@@ -4,6 +4,15 @@
 
 A modern, easy to use and feature-rich way to protect your Python Programs.
 
+## Features
+
+- Completely Configurable Module System 
+- Completely Configurable On Detection System
+- Encrypted Logging System With Remote Uploading
+- Discord Webhook Support
+- Clean, Optimized Code
+- Constant Updates
+
 ## Installation
 
 **Python 3.11 or higher is required**
@@ -70,4 +79,4 @@ You can find more examples in the [examples](https://github.com/xFGhoul/PythonPr
 `├──`[`pyprotector`](https://github.com/xFGhoul/PythonProtector/blob/dev/pyprotector) — Source Code Of PythonProtector<br>
 `├──`[`scripts`](https://github.com/xFGhoul/PythonProtector/blob/dev/scripts) — Scripts Used In The Development Process<br>
 
-> Made With ❤️ By `ghoul#1337` and `Marci#4399`
+> Made With ❤️ By `ghoul#1337` and `Marci#0101`
