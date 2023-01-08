@@ -29,3 +29,7 @@ I know this is a pretty quick release, and the jump from `1.1` to `1.5` but I fe
 - **Updated Minimum Python Requirement To 3.11**
 
 - **Refactoring and Misc Improvements**
+
+## 1.6 - 2022-01-07
+
+Minor bump for `setup.py` bug that didn't allow importing.

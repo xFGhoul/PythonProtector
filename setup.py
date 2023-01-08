@@ -11,7 +11,7 @@ Made With ❤️ By Ghoul & Marci
 
 from distutils.core import setup
 
-with open("README.md") as readme_file:
+with open("README.md", encoding="utf8") as readme_file:
     README = readme_file.read()
 
 with open("HISTORY.md") as history_file:
@@ -19,8 +19,8 @@ with open("HISTORY.md") as history_file:
 
 setup(
     name="PythonProtector",
-    packages=["pyprotector"],
-    version="1.5",
+    packages=["pyprotector", "pyprotector.utils", "pyprotector.modules"],
+    version="1.6",
     license="MIT",
     description="Library for protecting your python files",
     author="Ghoul & Marci",
