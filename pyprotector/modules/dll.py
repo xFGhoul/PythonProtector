@@ -1,10 +1,10 @@
 """
-    ____          ____                __               __
+	____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-       /____/
+	   /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -17,21 +17,29 @@ import win32process
 
 from typing import Any
 
+from ..types import Event, Logger
+from ..abc import Module
 from ..constants import Lists
 from ..utils.webhook import Webhook
 
 
-class AntiDLL:
+class AntiDLL(Module):
     def __init__(
             self,
             webhook: Webhook,
-            logger: Any,
+            logger: Logger,
             exit: bool,
-            report: bool) -> None:
+            report: bool,
+            event: Event) -> None:
         self.webhook: Webhook = webhook
-        self.logger: Any = logger
+        self.logger: Logger = logger
         self.exit: bool = exit
         self.report: bool = report
+        self.event: Event = event
+
+    @property
+    def name(self):
+        return "Anti DLL"
 
     def BlockDLLs(self) -> None:
         while True:
@@ -64,7 +72,11 @@ class AntiDLL:
                     if self.report:
                         self.webhook.send(
                             f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
-                            "Anti DLL",
+                            self.name,
+                        )
+                        self.event.dispatch(
+                            f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
+                            self.name,
                         )
                     if self.exit:
                         os._exit(1)

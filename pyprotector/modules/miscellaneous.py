@@ -21,24 +21,32 @@ import requests
 import psutil
 import win32api
 
-from typing import Literal, Any
+from typing import Literal
 
+from ..types import Event, Logger
+from ..abc import Module
 from ..constants import Lists, UserInfo, Lists
 from ..utils.http import hasInternet
 from ..utils.webhook import Webhook
 
 
-class Miscellaneous:
+class Miscellaneous(Module):
     def __init__(
             self,
             webhook: Webhook,
-            logger: Any,
+            logger: Logger,
             exit: bool,
-            report: bool) -> None:
+            report: bool,
+            event: Event) -> None:
         self.webhook: Webhook = webhook
-        self.logger = logger
+        self.logger: Logger = logger
         self.exit: bool = exit
         self.report: bool = report
+        self.event: Event = event
+
+    @property
+    def name(self):
+        return self.__class__.__name__
 
     def CheckInternet(self) -> None:
         while True:
@@ -59,8 +67,11 @@ class Miscellaneous:
             self.logger.info("RAM Check Failed")
             if self.report:
                 self.webhook.send(
-                    f"RAM Check: Less than 4 GB of RAM exists on this system",
-                    "Miscellaneous",
+                    f"Less than 4 GB of RAM exists on this system",
+                    self.name,
+                )
+                self.event.dispatch(
+                    "Less than 4 GB of RAM exists on this system", self.name
                 )
             if self.exit:
                 os._exit(1)
@@ -72,9 +83,9 @@ class Miscellaneous:
             self.logger.send("IsDebuggerPresent Returned True")
             if self.report:
                 self.webhook.send(
-                    f"IsDebuggerPresent: A debugger is present, exiting program...",
-                    "Miscellaneous",
-                )
+                    f"IsDebuggerPresent Returned True", self.name)
+                self.event.dispatch(
+                    "IsDebuggerPresent Returned True", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -87,8 +98,11 @@ class Miscellaneous:
             self.logger.send("CheckRemoteDebuggerPresent Returned True")
             if self.report:
                 self.webhook.send(
-                    "CheckRemoteDebuggerPresent: A debugger is present, exiting program...",
-                    "Miscellaneous",
+                    "CheckRemoteDebuggerPresent Returned True",
+                    self.name,
+                )
+                self.event.dispatch(
+                    "CheckRemoteDebuggerPresent Returned True", self.name
                 )
             if self.exit:
                 os._exit(1)
@@ -104,7 +118,11 @@ class Miscellaneous:
             self.logger.info("Disk Check Failed")
             if self.report:
                 self.webhook.send(
-                    f"Disk Check: The disk size of this host is {diskSizeGB} GB, which is less than the minimum {minDiskSizeGB} GB"
+                    f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum"
+                )
+                self.event.dispatch(
+                    f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum",
+                    self.name,
                 )
             if self.exit:
                 os._exit(1)
@@ -124,8 +142,8 @@ class Miscellaneous:
             if os.path.exists(path):
                 self.logger.info("Blacklisted Path Found")
                 if self.report:
-                    self.webhook.send(
-                        "Blacklisted Path Found", "Miscellaneous")
+                    self.webhook.send("Blacklisted Path Found", self.name)
+                    self.event.dispatch("Blacklisted Path Found", self.name)
                 if self.exit:
                     os._exit(1)
             else:
@@ -139,9 +157,10 @@ class Miscellaneous:
                     self.logger.info(f"{package} Was Found Installed")
                     if self.report:
                         self.webhook.send(
-                            f"`{package}` Was Found Installed On User Machine",
-                            "Miscellaneous",
+                            f"`{package}` Was Found Installed",
+                            self.name,
                         )
+                        self.event.dispatch(f"{package} Was Found Installed")
                     if self.exit:
                         os._exit(1)
                 else:
@@ -156,8 +175,9 @@ class Miscellaneous:
             self.logger.info("OutputDebugString Is Not 0")
             if self.report:
                 self.webhook.send(
-                    "OutputDebugString Not Equal To 0",
-                    "Miscellaneous")
+                    "OutputDebugString Not Equal To 0", self.name)
+                self.event.dispatch(
+                    "OutputDebugString Not Equal To 0", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -166,8 +186,11 @@ class Miscellaneous:
             self.logger.info(f"{UserInfo.IP} Is A Blacklisted IP Address")
             if self.report:
                 self.webhook.send(
-                    f"`{UserInfo.IP}` Is A Blacklisted IP Address",
-                    "Miscellaneous")
+                    f"`{UserInfo.IP}` Is A Blacklisted IP Address", self.name
+                )
+                self.event.dispatch(
+                    f"{UserInfo.IP} Is A Blacklisted IP Address", self.name
+                )
             if self.exit:
                 os._exit(1)
         else:
@@ -178,8 +201,11 @@ class Miscellaneous:
             self.logger.info(f"CPU Core Count Is Less Than Or Equal To 1")
             if self.report:
                 self.webhook.send(
-                    f"CPU Core Count Is Less Than Or Equal To `1`",
-                    "Miscellaneous")
+                    "CPU Core Count Is Less Than Or Equal To `1`", self.name
+                )
+                self.event.dispatch(
+                    "CPU Core Count Is Less Than Or Equal To 1", self.name
+                )
             if self.exit:
                 os._exit(1)
 
@@ -190,15 +216,16 @@ class Miscellaneous:
             if header in response.headers:
                 self.logger.info("Proxy Headers In Use")
                 if self.report:
-                    self.webhook.send(
-                        "Proxy Headers Being Used", "Miscellaneous")
+                    self.webhook.send("Proxy Headers Being Used", self.name)
+                    self.event.dispatch("Proxy Headers Being Used", self.name)
                 if self.exit:
                     os._exit(1)
 
         if UserInfo.IP in Lists.PROXY_IPS:
             self.logger.info("Proxy IP In Use")
             if self.report:
-                self.webhook.send("Proxy IP Being Used", "Miscellaneous")
+                self.webhook.send("Proxy IP Being Used", self.name)
+                self.event.dispatch("Proxy IP Being Used", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -212,7 +239,8 @@ class Miscellaneous:
             if "Congratulations" in data.decode():
                 self.logger.info("Tor Network Detected")
                 if self.report:
-                    self.webhook.send("Tor Network In Use", "Miscellaneous")
+                    self.webhook.send("Tor Network In Use", self.name)
+                    self.event.dispatch("Tor Network In Use", self.name)
                 if self.exit:
                     os._exit(1)
         except Exception:
@@ -224,7 +252,9 @@ class Miscellaneous:
                 self.logger.info("Transparent Proxies Detected")
                 if self.report:
                     self.webhook.send(
-                        "Transparent Proxies Detected", "Miscellaneous")
+                        "Transparent Proxies Detected", self.name)
+                    self.event.dispatch(
+                        "Transparent Proxies Detected", self.name)
                 if self.exit:
                     os._exit(1)
         except Exception:

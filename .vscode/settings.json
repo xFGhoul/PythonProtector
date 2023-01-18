@@ -53,6 +53,7 @@
         "pyinject",
         "pywin",
         "regedit",
+        "rpyc",
         "sbiedll",
         "scyllahide",
         "serv",

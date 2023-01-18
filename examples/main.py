@@ -1,10 +1,10 @@
 """
-    ____          ____                __               __
+	____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-       /____/
+	   /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -35,6 +35,17 @@ security = PythonProtector(
         "Exit",
         "Screenshot"],
 )
+
+# -- Example Event
+
+
+@security.event.obs.on(
+    "pyprotector_detect"
+)  # Only Event, Anything Other Than This Will Error.
+def on_detection(text: str, module: str):
+    print(f"{module} - {text}")
+    # Free To Do Whatever You Want Here...
+
 
 # -- Main Code
 if __name__ == "__main__":

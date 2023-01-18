@@ -1,10 +1,10 @@
 """
-    ____          ____                __               __
+	____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-       /____/
+	   /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -15,23 +15,31 @@ import ctypes
 from typing import Any
 from ctypes import WinDLL
 
+from ..types import Event, Logger
+from ..abc import Module
 from ..utils.webhook import Webhook
 
 
-class AntiAnalysis:
+class AntiAnalysis(Module):
     def __init__(
             self,
             webhook: Webhook,
-            logger: Any,
+            logger: Logger,
             exit: bool,
-            report: bool) -> None:
+            report: bool,
+            event: Event) -> None:
         self.webhook: Webhook = webhook
-        self.logger: Any = logger
+        self.logger: Logger = logger
         self.exit: bool = exit
         self.report: bool = report
+        self.event: Event = event
 
         self.kernel32: WinDLL = ctypes.windll.kernel32
         self.ntdll: WinDLL = ctypes.windll.ntdll
+
+    @property
+    def name(self):
+        return "Anti Analysis"
 
     def CheckDebugPrivilege(self) -> None:
         hToken = ctypes.c_void_p()
@@ -66,8 +74,8 @@ class AntiAnalysis:
                 self.ntdll.NtClose(hToken)
                 self.logger.info("Debug Privilege Found Enabled")
                 if self.report:
-                    self.webhook.send(
-                        "Debug Privilege Enabled", "Anti Analysis")
+                    self.webhook.send("Debug Privilege Enabled", self.name)
+                    self.event.dispatch("Debug Privilege Enabled", self.name)
                 if self.exit:
                     os._exit(1)
 
@@ -116,9 +124,8 @@ class AntiAnalysis:
             self.kernel32.CloseHandle(hProcess)
             self.logger.info("Debug Object Handle Found")
             if self.report:
-                self.webhook.send(
-                    "Debug Object Handle Detected",
-                    "Anti Analysis")
+                self.webhook.send("Debug Object Handle Detected", self.name)
+                self.event.dispatch("Debug Object Handle Detected", self.name)
             if self.exit:
                 os._exit((1))
 
@@ -143,9 +150,8 @@ class AntiAnalysis:
             self.kernel32.CloseHandle(hProcess)
             self.logger.info("Debug Object Handle Found")
             if self.report:
-                self.webhook.send(
-                    "Debug Object Handle Detected",
-                    "Anti Analysis")
+                self.webhook.send("Debug Object Handle Detected", self.name)
+                self.event.dispatch("Debug Object Handle Detected", self.name)
             if self.exit:
                 os._exit((1))
 
@@ -171,9 +177,9 @@ class AntiAnalysis:
             )
             if self.report:
                 self.webhook.send(
-                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block",
-                    "Anti Analysis",
-                )
+                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block", self.name, )
+                self.event.dispatch(
+                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block", self.name, )
             if self.exit:
                 os._exit(1)
 
@@ -198,9 +204,9 @@ class AntiAnalysis:
             self.kernel32.CloseHandle(hThread)
             self.logger.info("Hardware Breakpoints Found Set")
             if self.report:
-                self.webhook.send(
-                    "Hardware Breakpoints Found Set",
-                    "Anti Analysis")
+                self.webhook.send("Hardware Breakpoints Found Set", self.name)
+                self.event.dispatch(
+                    "Hardware Breakpoints Found Set", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -216,8 +222,9 @@ class AntiAnalysis:
             self.logger.info("Debug Filter State is not 0")
             if self.report:
                 self.webhook.send(
-                    "Debug Filter State `!= 0`, debugging detected",
-                    "Anti Analysis")
+                    "Debug Filter State `!= 0`, debugging detected", self.name
+                )
+                self.event.dispatch("Debug Filter State is not 0", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -235,9 +242,8 @@ class AntiAnalysis:
         if peb.BeingDebugged:
             self.logger.info("Process Being Debugged")
             if self.report:
-                self.webhook.send(
-                    "Process Found Being Debugged",
-                    "Anti Analysis")
+                self.webhook.send("Process Found Being Debugged", self.name)
+                self.event.dispatch("Process Found Being Debugged", self.name)
             if self.exit:
                 os._exit(1)
 

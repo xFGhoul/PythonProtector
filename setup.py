@@ -1,10 +1,10 @@
 """
-    ____          ____                __               __
+	____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-       /____/
+	   /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -27,7 +27,15 @@ setup(
     url="https://github.com/xFGhoul/PythonProtecttor",
     long_description_content_type="text/markdown",
     long_description=README + "\n\n" + HISTORY,
-    keywords=["keyauth", "protection", "protect", "obfuscate", "obfuscation", "WMI", "windows"],
+    keywords=[
+        "keyauth",
+        "protection",
+        "protect",
+        "obfuscate",
+        "obfuscation",
+        "WMI",
+        "windows",
+    ],
     install_requires=[
         "humanize",
         "loguru",

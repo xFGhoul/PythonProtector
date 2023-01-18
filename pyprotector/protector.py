@@ -1,10 +1,10 @@
 """
-    ____          ____                __               __
+	____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-       /____/
+	   /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -19,17 +19,18 @@ import cpuinfo
 import datetime
 from pathlib import Path
 from threading import Thread
-from typing import Any, Dict, Union, List, Optional
+from typing import Dict, Union, List, Optional
 
 from command_runner.elevate import is_admin
 from loguru import logger
 
-from .constants import ProtectorInfo, LoggingInfo, EmbedConfig, Valid
+from .constants import ProtectorInfo, LoggingInfo, Valid
 from .modules.process import AntiProcess
 from .modules.vm import AntiVM
 from .modules.dll import AntiDLL
 from .modules.miscellaneous import Miscellaneous
 from .modules.analysis import AntiAnalysis
+from .utils.events import ProtectorObservable
 from .utils.webhook import Webhook
 from .utils.exceptions import ModulesNotValid, DetectionsNotValid, LogsPathEmpty
 
@@ -46,16 +47,16 @@ class PythonProtector:
         """Main PythonProtector Class
 
         Args:
-            debug (bool): Whether Or Not PythonProtector Should Log Actions.
-            modules (List[str]): List Of Modules You Would Like To Enable.
-            logs_path (Union[Path, str]): Path For PythonProtector Logs.
-            webhook_url (str): Webhook URL For Reporting Remotely.
-            on_detect (List[str], optional): List of Things PyProtector Does When Detections Are Caused
+                debug (bool): Whether Or Not PythonProtector Should Log Actions.
+                modules (List[str]): List Of Modules You Would Like To Enable.
+                logs_path (Union[Path, str]): Path For PythonProtector Logs.
+                webhook_url (str): Webhook URL For Reporting Remotely.
+                on_detect (List[str], optional): List of Things PyProtector Does When Detections Are Caused
 
         Raises:
-            ModulesNotValid: Raises If Modules Are Not Valid
-            DetectionsNotValid: Raises If on_detect parameters are invalid
-            LogsPathEmpty: Raises If Debug Is Enabled But No Logs Path Are Provided
+                ModulesNotValid: Raises If Modules Are Not Valid
+                DetectionsNotValid: Raises If on_detect parameters are invalid
+                LogsPathEmpty: Raises If Debug Is Enabled But No Logs Path Are Provided
         """
         # -- Validate Modules and Detections
         self.modules: List[str] = modules
@@ -106,6 +107,13 @@ class PythonProtector:
         self.exit: bool = True if "Exit" in self.detections else False
         self.report: bool = True if "Report" in self.detections else False
 
+        if self.report and self.webhook_url is None:
+            raise RuntimeWarning(
+                "Reporting Was Set But No Webhook URL Was Provided.")
+
+        # -- Initialize Events
+        self.event = ProtectorObservable()
+
         # -- Initialize Webhooks
         self.webhook_url: str = webhook_url
         self.webhook: Webhook = Webhook(
@@ -114,33 +122,35 @@ class PythonProtector:
 
         # -- Initialize Modules
         self.Miscellaneous: Miscellaneous = Miscellaneous(
-            self.webhook, self.logger, self.exit, self.report
+            self.webhook, self.logger, self.exit, self.report, self.event
         )
         self.AntiProcess: AntiProcess = AntiProcess(
-            self.webhook, self.logger, self.exit, self.report
+            self.webhook, self.logger, self.exit, self.report, self.event
         )
         self.AntiDLL: AntiDLL = AntiDLL(
-            self.webhook, self.logger, self.exit, self.report
+            self.webhook, self.logger, self.exit, self.report, self.event
         )
         self.AntiVM: AntiVM = AntiVM(
-            self.webhook, self.logger, self.exit, self.report)
+            self.webhook, self.logger, self.exit, self.report, self.event
+        )
         self.AntiAnalysis: AntiAnalysis = AntiAnalysis(
-            self.webhook, self.logger, self.exit, self.report
+            self.webhook, self.logger, self.exit, self.report, self.event
         )
 
         # -- Debug Checks
         if self.debug:
+            self.event.enable()
             self.logger.enable("PythonProtector")
         else:
+            self.event.disable()
             self.logger.disable("PythonProtector")
 
     def run_module_threads(self, debug: bool) -> None:
         if debug:
             if "Miscellaneous" in self.modules:
                 self.logger.info("Starting Miscellaneous Thread")
-                Thread(
-                    name="Miscellaneous", target=self.Miscellaneous.StartChecks
-                ).start()
+                Thread(name=self.Miscellaneous.name,
+                       target=self.Miscellaneous.StartChecks).start()
                 self.logger.info("Miscellaneous Thread Started")
             if "AntiProcess" in self.modules:
                 self.logger.info("Starting Anti Process Thread")
@@ -151,40 +161,47 @@ class PythonProtector:
                 self.logger.info("Anti Process Thread Started")
             if "AntiDLL" in self.modules:
                 self.logger.info("Starting Anti DLL Thread")
-                Thread(name="Anti DLL", target=self.AntiDLL.BlockDLLs).start()
+                Thread(
+                    name=self.AntiDLL.name,
+                    target=self.AntiDLL.BlockDLLs).start()
                 self.logger.info("Anti DLL Thread Started")
             if "AntiVM" in self.modules:
                 self.logger.info("Starting Anti VM Thread")
-                Thread(name="Anti VM", target=self.AntiVM.StartChecks).start()
+                Thread(
+                    name=self.AntiVM.name,
+                    target=self.AntiVM.StartChecks).start()
                 self.logger.info("Anti VM Thread Started")
             if "AntiAnalysis" in self.modules:
                 self.logger.info("Starting Anti Analysis Thread")
-                Thread(name="Anti Analysis",
+                Thread(name=self.AntiAnalysis.name,
                        target=self.AntiAnalysis.StartAnalyzing).start()
                 self.logger.info("Anti Analysis Thread Started")
         else:
             if "Miscellaneous" in self.modules:
-                Thread(
-                    name="Miscellaneous", target=self.Miscellaneous.StartChecks
-                ).start()
+                Thread(name=self.Miscellaneous.name,
+                       target=self.Miscellaneous.StartChecks).start()
             if "AntiProcess" in self.modules:
                 Thread(name="Anti Process List",
                        target=self.AntiProcess.CheckProcessList).start()
                 Thread(name="Anti Window Names",
                        target=self.AntiProcess.CheckWindowNames).start()
             if "AntiDLL" in self.modules:
-                Thread(name="Anti DLL", target=self.AntiDLL.BlockDLLs).start()
+                Thread(
+                    name=self.AntiDLL.name,
+                    target=self.AntiDLL.BlockDLLs).start()
             if "AntiVM" in self.modules:
-                Thread(name="Anti VM", target=self.AntiVM.StartChecks).start()
+                Thread(
+                    name=self.AntiVM.name,
+                    target=self.AntiVM.StartChecks).start()
             if "AntiAnalysis" in self.modules:
-                Thread(name="Anti Analysis",
+                Thread(name=self.AntiAnalysis.name,
                        target=self.AntiAnalysis.StartAnalyzing).start()
 
     def start(self) -> None:
         """Main Function Of PythonProtector
 
         Raises:
-            DeprecationWarning: If Python Version < 3.11
+                DeprecationWarning: If Python Version < 3.11
         """
         # -- Check If Windows Platform
         if sys.platform != "win32":

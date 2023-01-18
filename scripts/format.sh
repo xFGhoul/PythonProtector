@@ -9,12 +9,16 @@ echo -------------------------------------
 
 cd ..
 
-black .
+black -v .
 
 echo -------------------------------------
 
-autopep8 --in-place --aggressive --aggressive --recursive .
+autopep8 --in-place --aggressive --aggressive --recursive -v .
 
+
+echo -------------------------------------
+
+autoflake --in-place --remove-unused-variables .
 
 echo -------------------------------------
 

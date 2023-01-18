@@ -1,10 +1,10 @@
 """
-    ____          ____                __               __
+	____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-       /____/
+	   /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -17,23 +17,27 @@ import uuid
 
 import httpx
 
-from typing import List, Any
+from typing import List
 
+from ..types import Event, Logger
+from ..abc import Module
 from ..constants import Lists, UserInfo
 from ..utils.webhook import Webhook
 
 
-class AntiVM:
+class AntiVM(Module):
     def __init__(
             self,
             webhook: Webhook,
-            logger: Any,
+            logger: Logger,
             exit: bool,
-            report: bool) -> None:
+            report: bool,
+            event: Event) -> None:
         self.webhook: Webhook = webhook
-        self.logger: Any = logger
+        self.logger: Logger = logger
         self.exit: bool = exit
         self.report: bool = report
+        self.event: Event = event
 
         self.HWIDS: List[str] = httpx.get(
             "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/hwid_list.txt"
@@ -57,6 +61,10 @@ class AntiVM:
             "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/pc_platforms.txt"
         ).text
 
+    @property
+    def name(self):
+        return "Anti VM"
+
     def get_base_prefix_compat(self) -> None:
         return (
             getattr(sys, "base_prefix", None)
@@ -70,8 +78,9 @@ class AntiVM:
                 f"Blacklisted HWID Detected. HWID: {UserInfo.HWID}")
             if self.report:
                 self.webhook.send(
-                    f"**Blacklisted HWID Detected. HWID:** `{UserInfo.HWID}`",
-                    "Anti VM")
+                    f"Blacklisted HWID Detected: `{UserInfo.HWID}`", self.name
+                )
+                self.event.dispatch("Blacklisted HWID Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -79,8 +88,9 @@ class AntiVM:
             self.logger.info(f"Blacklisted PC User: {UserInfo.USERNAME}")
             if self.report:
                 self.webhook.send(
-                    f"**Blacklisted PC User:** `{UserInfo.USERNAME}`",
-                    "Anti VM")
+                    f"Blacklisted PC User: `{UserInfo.USERNAME}`", self.name
+                )
+                self.event.dispatch("Blacklisted PC User Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -88,8 +98,9 @@ class AntiVM:
             self.logger.info(f"Blacklisted PC Name: {UserInfo.PC_NAME}")
             if self.report:
                 self.webhook.send(
-                    f"**Blacklisted PC Name:** `{UserInfo.PC_NAME}`", "Anti VM"
+                    f"Blacklisted PC Name: `{UserInfo.PC_NAME}`", self.name
                 )
+                self.event.dispatch("Blacklisted PC Name Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -97,7 +108,8 @@ class AntiVM:
             self.logger.info(f"Blacklisted IP: {UserInfo.IP}")
             if self.report:
                 self.webhook.send(
-                    f"**Blacklisted IP:** `{UserInfo.IP}`", "Anti VM")
+                    f"Blacklisted IP: `{UserInfo.IP}`", self.name)
+                self.event.dispatch("Blacklisted IP Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -105,7 +117,8 @@ class AntiVM:
             self.logger.info(f"Blacklisted MAC: {UserInfo.MAC}")
             if self.report:
                 self.webhook.send(
-                    f"**Blacklisted MAC:** `{UserInfo.MAC}`", "Anti VM")
+                    f"Blacklisted MAC: `{UserInfo.MAC}`", self.name)
+                self.event.dispatch("Blacklisted MAC Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -113,7 +126,8 @@ class AntiVM:
             self.logger.info(f"Blacklisted GPU: {UserInfo.GPU}")
             if self.report:
                 self.webhook.send(
-                    f"**Blacklisted GPU:** `{UserInfo.GPU}`", "Anti VM")
+                    f"Blacklisted GPU: `{UserInfo.GPU}`", self.name)
+                self.event.dispatch("Blacklisted GPU Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -133,7 +147,8 @@ class AntiVM:
         if reg1 != 1 and reg2 != 1:
             self.logger.info("VMWare Registry Detected")
             if self.report:
-                self.webhook.send("VMWare Registry Detected", "Anti DLL")
+                self.webhook.send("VMWare Registry Detected", self.name)
+                self.event.dispatch("VMWare Registry Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -143,7 +158,8 @@ class AntiVM:
         if mac_address[:8] in vmware_mac_list:
             self.logger.info("VMWare MAC Address Detected")
             if self.report:
-                self.webhook.send("**VMWare MAC Address Detected**", "Anti VM")
+                self.webhook.send("VMWare MAC Address Detected", self.name)
+                self.event.dispatch("VMWare MAC Address Detected", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -154,7 +170,8 @@ class AntiVM:
             self.logger.info(f"Screen Size X: {x} | Y: {y}")
             if self.report:
                 self.webhook.send(
-                    f"Screen Size Is: **x**: {x} | **y**: {y}", "Anti VM")
+                    f"Screen Size Is: **x**: {x} | **y**: {y}", self.name)
+                self.event.dispatch(f"Screen Size X: {x} | Y: {y}", self.name)
             if self.exit:
                 os._exit(1)
 
@@ -183,7 +200,10 @@ class AntiVM:
             self.logger.info("Blacklisted Virtual Machine Process Running")
             if self.report:
                 self.webhook.send(
-                    "Blacklisted Virtual Machine Process Running", "Anti VM"
+                    "Blacklisted Virtual Machine Process Running", self.name
+                )
+                self.event.dispatch(
+                    "Blacklisted Virtual Machine Process Running", self.name
                 )
             if self.exit:
                 os._exit(1)
@@ -191,14 +211,16 @@ class AntiVM:
         if os.path.exists(vmware_dll):
             self.logger.info("VMWare DLL Detected")
             if self.report:
-                self.webhook.send("**VMWare DLL Detected**", "Anti VM")
+                self.webhook.send("VMWare DLL Detected", self.name)
+                self.event.dispatch("VMWare DLL Detected", self.name)
             if self.exit:
                 os._exit(1)
 
         if os.path.exists(virtualbox_dll):
             self.logger.info("VirtualBox DLL Detected")
             if self.report:
-                self.webhook.send("**VirtualBox DLL Detected**", "Anti VM")
+                self.webhook.send("VirtualBox DLL Detected", self.name)
+                self.event.dispatch("VirtualBox DLL Detected")
             if self.exit:
                 os._exit(1)
 

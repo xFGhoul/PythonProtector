@@ -130,7 +130,8 @@ dmypy.json
 
 # Internal Testing
 _testing.py
-_test.py
+_test_rpc.py
+_test_internals.py
 logs/
 
 # Poetry

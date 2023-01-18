@@ -1,10 +1,10 @@
 """
-    ____          ____                __               __
+	____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-       /____/
+	   /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -15,24 +15,31 @@ import time
 import psutil
 import win32gui
 
-from typing import Any
 from win32process import GetWindowThreadProcessId
 
+from ..types import Event, Logger
+from ..abc import Module
 from ..constants import Lists
 from ..utils.webhook import Webhook
 
 
-class AntiProcess:
+class AntiProcess(Module):
     def __init__(
             self,
             webhook: Webhook,
-            logger: Any,
+            logger: Logger,
             exit: bool,
-            report: bool) -> None:
+            report: bool,
+            event: Event) -> None:
         self.webhook: Webhook = webhook
-        self.logger: Any = logger
+        self.logger: Logger = logger
         self.exit: bool = exit
         self.report: bool = report
+        self.event: Event = event
+
+    @property
+    def name(self):
+        return "Anti Process"
 
     def CheckProcessList(self) -> None:
         while True:
@@ -49,7 +56,11 @@ class AntiProcess:
                             if self.report:
                                 self.webhook.send(
                                     f"Anti-Debug Program: `{process.name()}` was detected running on the system.",
-                                    "Anti Process",
+                                    self.name,
+                                )
+                                self.event.dispatch(
+                                    f"Anti-Debug Program: {process.name()} was detected running on the system.",
+                                    self.name,
                                 )
                             process.kill()
                             if self.exit:
@@ -70,7 +81,11 @@ class AntiProcess:
                     self.logger.info(f"{window_name} Found")
                     if self.report:
                         self.webhook.send(
-                            f"Found `{window_name}` in Window Names", "Anti Process")
+                            f"Found `{window_name}` in Window Names", self.name
+                        )
+                        self.event.dispatch(
+                            f"Found {window_name} in Window Names", self.name
+                        )
                     if self.exit:
                         os._exit(1)
             except (RuntimeError, NameError, TypeError, OSError) as error:
@@ -96,8 +111,9 @@ class AntiProcess:
                 self.logger.info(f"{win32gui.GetWindowText(hwnd)} Found")
                 if self.report:
                     self.webhook.send(
-                        f"Debugger Open: {win32gui.GetWindowText(hwnd)}",
-                        "Anti Process")
+                        f"Debugger Open: {win32gui.GetWindowText(hwnd)}", self.name)
+                    self.event.dispatch(
+                        f"Debugger {win32gui.GetWindowText(hwnd)} Found Open", self.name)
                 if self.exit:
                     os._exit(1)
 
