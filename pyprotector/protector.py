@@ -107,15 +107,16 @@ class PythonProtector:
         self.exit: bool = True if "Exit" in self.detections else False
         self.report: bool = True if "Report" in self.detections else False
 
-        if self.report and self.webhook_url is None:
-            raise RuntimeWarning(
-                "Reporting Was Set But No Webhook URL Was Provided.")
-
         # -- Initialize Events
         self.event = ProtectorObservable()
 
         # -- Initialize Webhooks
         self.webhook_url: str = webhook_url
+        
+        if self.report and self.webhook_url is None:
+            raise RuntimeWarning(
+                "Reporting Was Set But No Webhook URL Was Provided.")
+            
         self.webhook: Webhook = Webhook(
             self.webhook_url, self.logs_path, self.screenshot
         )

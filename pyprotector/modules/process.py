@@ -55,11 +55,11 @@ class AntiProcess(Module):
                                 f"{process.name} Process Was Running")
                             if self.report:
                                 self.webhook.send(
-                                    f"Anti-Debug Program: `{process.name()}` was detected running on the system.",
+                                    f"`{process.name()}` was detected running on the system.",
                                     self.name,
                                 )
                                 self.event.dispatch(
-                                    f"Anti-Debug Program: {process.name()} was detected running on the system.",
+                                    f"{process.name()} was detected running on the system.",
                                     self.name,
                                 )
                             process.kill()
@@ -111,7 +111,7 @@ class AntiProcess(Module):
                 self.logger.info(f"{win32gui.GetWindowText(hwnd)} Found")
                 if self.report:
                     self.webhook.send(
-                        f"Debugger Open: {win32gui.GetWindowText(hwnd)}", self.name)
+                        f"Debugger {win32gui.GetWindowText(hwnd)}", self.name)
                     self.event.dispatch(
                         f"Debugger {win32gui.GetWindowText(hwnd)} Found Open", self.name)
                 if self.exit:
