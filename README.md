@@ -81,4 +81,9 @@ You can find more examples in the [examples](https://github.com/xFGhoul/PythonPr
 `├──`[`pyprotector`](https://github.com/xFGhoul/PythonProtector/blob/dev/pyprotector) — Source Code Of PythonProtector<br>
 `├──`[`scripts`](https://github.com/xFGhoul/PythonProtector/blob/dev/scripts) — Scripts Used In The Development Process<br>
 
+## Links
+
+- [Documentation](http://ghouldev.me/PythonProtector/)
+- [Official Discord Server](https://discord.gg/yMu9qjdrmp)
+
 > Made With ❤️ By `ghoul#1337` and `Marci#0101`
