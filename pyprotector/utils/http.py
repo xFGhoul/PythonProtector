@@ -12,9 +12,9 @@ Made With ❤️ By Ghoul & Marci
 import httpx
 
 
-def get_ip_address() -> str:
-    data = httpx.get("https://ipinfo.io/json").json()
-    ip = data.get("ip")
+def getIPAddress() -> str:
+    response = httpx.get("https://ipinfo.io/json").json()
+    ip = response.get("ip")
     return ip
 
 

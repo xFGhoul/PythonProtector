@@ -39,6 +39,8 @@ class AntiVM(Module):
         self.report: bool = report
         self.event: Event = event
 
+        self.VMWARE_MACS = ["00:05:69", "00:0c:29", "00:1c:14", "00:50:56"]
+
         self.HWIDS: List[str] = httpx.get(
             "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/hwid_list.txt"
         ).text
@@ -65,7 +67,7 @@ class AntiVM(Module):
     def name(self):
         return "Anti VM"
 
-    def get_base_prefix_compat(self) -> None:
+    def _get_base_prefix_compat(self) -> None:
         return (
             getattr(sys, "base_prefix", None)
             or getattr(sys, "real_prefix", None)
@@ -80,7 +82,12 @@ class AntiVM(Module):
                 self.webhook.send(
                     f"Blacklisted HWID Detected: `{UserInfo.HWID}`", self.name
                 )
-                self.event.dispatch("Blacklisted HWID Detected", self.name)
+                self.event.dispatch(
+                    "blacklisted_hwid",
+                    "Blacklisted HWID Detected",
+                    self.name,
+                    hwid=UserInfo.HWID,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -90,7 +97,12 @@ class AntiVM(Module):
                 self.webhook.send(
                     f"Blacklisted PC User: `{UserInfo.USERNAME}`", self.name
                 )
-                self.event.dispatch("Blacklisted PC User Detected", self.name)
+                self.event.dispatch(
+                    "blacklisted_pc_username",
+                    "Blacklisted PC User Detected",
+                    self.name,
+                    pc_username=UserInfo.USERNAME,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -100,7 +112,12 @@ class AntiVM(Module):
                 self.webhook.send(
                     f"Blacklisted PC Name: `{UserInfo.PC_NAME}`", self.name
                 )
-                self.event.dispatch("Blacklisted PC Name Detected", self.name)
+                self.event.dispatch(
+                    "blacklisted_pc_name",
+                    "Blacklisted PC Name Detected",
+                    self.name,
+                    pc_name=UserInfo.PC_NAME,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -109,7 +126,12 @@ class AntiVM(Module):
             if self.report:
                 self.webhook.send(
                     f"Blacklisted IP: `{UserInfo.IP}`", self.name)
-                self.event.dispatch("Blacklisted IP Detected", self.name)
+                self.event.dispatch(
+                    "blacklisted_ip",
+                    "Blacklisted IP Detected",
+                    self.name,
+                    ip=UserInfo.IP,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -118,7 +140,12 @@ class AntiVM(Module):
             if self.report:
                 self.webhook.send(
                     f"Blacklisted MAC: `{UserInfo.MAC}`", self.name)
-                self.event.dispatch("Blacklisted MAC Detected", self.name)
+                self.event.dispatch(
+                    "blacklisted_mac_address",
+                    "Blacklisted MAC Detected",
+                    self.name,
+                    mac_addr=UserInfo.MAC,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -127,12 +154,17 @@ class AntiVM(Module):
             if self.report:
                 self.webhook.send(
                     f"Blacklisted GPU: `{UserInfo.GPU}`", self.name)
-                self.event.dispatch("Blacklisted GPU Detected", self.name)
+                self.event.dispatch(
+                    "blacklisted_gpu",
+                    "Blacklisted GPU Detected",
+                    self.name,
+                    gpu=UserInfo.GPU,
+                )
             if self.exit:
                 os._exit(1)
 
     def CheckVirtualEnv(self) -> None:
-        if self.get_base_prefix_compat() != sys.prefix:
+        if self._get_base_prefix_compat() != sys.prefix:
             if self.exit:
                 os._exit(1)
 
@@ -148,30 +180,44 @@ class AntiVM(Module):
             self.logger.info("VMWare Registry Detected")
             if self.report:
                 self.webhook.send("VMWare Registry Detected", self.name)
-                self.event.dispatch("VMWare Registry Detected", self.name)
+                self.event.dispatch(
+                    "vmware_registry",
+                    "VMWare Registry Detected",
+                    self.name,
+                    reg1=reg1,
+                    reg2=reg2,
+                )
             if self.exit:
                 os._exit(1)
 
     def CheckMacAddress(self) -> None:
-        mac_address = ":".join(re.findall("..", "%012x" % uuid.getnode()))
-        vmware_mac_list = ["00:05:69", "00:0c:29", "00:1c:14", "00:50:56"]
-        if mac_address[:8] in vmware_mac_list:
+        if UserInfo.MAC[:8] in self.VMWARE_MACS:
             self.logger.info("VMWare MAC Address Detected")
             if self.report:
                 self.webhook.send("VMWare MAC Address Detected", self.name)
-                self.event.dispatch("VMWare MAC Address Detected", self.name)
+                self.event.dispatch(
+                    "vmware_mac",
+                    "VMWare MAC Address Detected",
+                    self.name,
+                    mac_addr=UserInfo.MAC,
+                )
             if self.exit:
                 os._exit(1)
 
     def CheckScreenSize(self) -> None:
-        x = ctypes.windll.user32.GetSystemMetrics(0)
-        y = ctypes.windll.user32.GetSystemMetrics(1)
+        x: int = ctypes.windll.user32.GetSystemMetrics(0)
+        y: int = ctypes.windll.user32.GetSystemMetrics(1)
         if x <= 200 or y <= 200:
             self.logger.info(f"Screen Size X: {x} | Y: {y}")
             if self.report:
                 self.webhook.send(
                     f"Screen Size Is: **x**: {x} | **y**: {y}", self.name)
-                self.event.dispatch(f"Screen Size X: {x} | Y: {y}", self.name)
+                self.event.dispatch(
+                    "screen_size",
+                    f"Screen Size X: {x} | Y: {y}",
+                    self.name,
+                    x=x,
+                    y=y)
             if self.exit:
                 os._exit(1)
 
@@ -203,7 +249,10 @@ class AntiVM(Module):
                     "Blacklisted Virtual Machine Process Running", self.name
                 )
                 self.event.dispatch(
-                    "Blacklisted Virtual Machine Process Running", self.name
+                    "vm_process_running",
+                    "Blacklisted Virtual Machine Process Running",
+                    self.name,
+                    processes=processList,
                 )
             if self.exit:
                 os._exit(1)
@@ -212,7 +261,11 @@ class AntiVM(Module):
             self.logger.info("VMWare DLL Detected")
             if self.report:
                 self.webhook.send("VMWare DLL Detected", self.name)
-                self.event.dispatch("VMWare DLL Detected", self.name)
+                self.event.dispatch(
+                    "vmware_dll",
+                    "VMWare DLL Detected",
+                    self.name,
+                    dll=vmware_dll)
             if self.exit:
                 os._exit(1)
 
@@ -220,14 +273,21 @@ class AntiVM(Module):
             self.logger.info("VirtualBox DLL Detected")
             if self.report:
                 self.webhook.send("VirtualBox DLL Detected", self.name)
-                self.event.dispatch("VirtualBox DLL Detected")
+                self.event.dispatch(
+                    "virtualbox_dll",
+                    "VirtualBox DLL Detected",
+                    self.name,
+                    dll=virtualbox_dll,
+                )
             if self.exit:
                 os._exit(1)
 
     def StartChecks(self) -> None:
+        self.logger.info("Starting VM Checks")
         self.CheckVirtualEnv()
         self.CheckRegistry()
         self.CheckMacAddress()
         self.CheckScreenSize()
         self.CheckProcessesAndFiles()
         self.CheckLists()
+        self.logger.info("Finished VM Checks")

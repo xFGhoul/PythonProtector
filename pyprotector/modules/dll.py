@@ -15,7 +15,6 @@ import time
 import win32api
 import win32process
 
-from typing import Any
 
 from ..types import Event, Logger
 from ..abc import Module
@@ -71,12 +70,15 @@ class AntiDLL(Module):
                     )
                     if self.report:
                         self.webhook.send(
-                            f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
+                            f"The following DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
                             self.name,
                         )
                         self.event.dispatch(
-                            f"The following sandbox-indicative DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
+                            "dll_attach",
+                            f"The following DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
                             self.name,
+                            {EvidenceOfSandbox},
+                            dlls=EvidenceOfSandbox,
                         )
                     if self.exit:
                         os._exit(1)

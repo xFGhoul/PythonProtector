@@ -1,0 +1,81 @@
+site_name: PythonProtector
+site_description: A modern, easy to use and feature-rich way to protect your Python Programs.
+
+theme:
+  features:
+    - header.autohide
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+          icon: material/lightbulb
+          name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+          icon: material/lightbulb-outline
+          name: Switch to light mode
+  favicon: favicon.png
+  icon:
+    repo: fontawesome/brands/github
+
+repo_name: xFGhoul/PythonProtector
+repo_url: https://github.com/xFGhoul/PythonProtector
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+
+
+extra:
+  social:
+  - icon: fontawesome/brands/github-alt
+    link: https://github.com/xFGhoul
+  - icon: fontawesome/brands/discord
+    link: https://discord.gg/yMu9qjdrmp
+  - icon: fontawesome/brands/twitter
+    link: https://twitter.com/xghouldev
+  generator: false
+
+copyright: Copyright &copy; 2022 - 2023 xFGhoul & Marci
+
+nav:
+  - About: index.md
+  - installation.md
+  - Configuration:
+    - PythonProtector: configuration/PythonProtector/index.md
+    - Modules:
+      - Anti Analysis: 
+        - Method Reference: configuration/Modules/Anti Analysis/index.md
+        - Event Reference: configuration/Modules/Anti Analysis/events.md
+      - Anti DLL: 
+        - Method Reference: configuration/Modules/Anti DLL/index.md
+        - Event Reference: configuration/Modules/Anti DLL/events.md
+      - Anti Process: 
+        - Method Reference: configuration/Modules/Anti Process/index.md
+        - Event Reference: configuration/Modules/Anti Process/events.md
+      - Anti VM: 
+        - Method Reference: configuration/Modules/Anti VM/index.md
+        - Event Reference: configuration/Modules/Anti VM/events.md
+      - Miscellaneous: 
+        - Method Reference: configuration/Modules/Miscellaneous/index.md
+        - Event Reference: configuration/Modules/Miscellaneous/events.md
+    - Intro To Events: configuration/Events/index.md
+  - Frequently Asked Questions: faq.md
+  - License: license.md
+  - Release Notes: release.md
+  - Code Of Conduct: code_of_conduct.md
+
+plugins:
+  - search

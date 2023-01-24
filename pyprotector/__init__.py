@@ -9,6 +9,8 @@
 Made With ❤️ By Ghoul & Marci
 """
 
+__version__ = "1.6"
+
 from .protector import PythonProtector
 
 __all__ = ["PythonProtector"]

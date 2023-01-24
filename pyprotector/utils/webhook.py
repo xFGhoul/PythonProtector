@@ -96,4 +96,4 @@ class Webhook:
 
         webhook.add_embed(embed)
 
-        response = webhook.execute()
+        webhook.execute()

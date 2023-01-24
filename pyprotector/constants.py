@@ -20,7 +20,7 @@ from typing import Final, List, Set, final
 from cryptography.fernet import Fernet
 from base64 import b64encode
 
-from .utils.http import get_ip_address
+from .utils.http import getIPAddress
 
 computer = wmi.WMI()
 
@@ -29,7 +29,7 @@ computer = wmi.WMI()
 class UserInfo:
     USERNAME: Final[str] = os.getlogin()
     PC_NAME: Final[str] = os.getenv("COMPUTERNAME")
-    IP: Final[str] = get_ip_address()
+    IP: Final[str] = getIPAddress()
     HWID: Final[str] = (
         subprocess.check_output("wmic csproduct get uuid")
         .decode()

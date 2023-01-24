@@ -16,11 +16,5 @@ class ProtectorObservable:
     def __init__(self) -> None:
         self.obs = Observable()
 
-    def dispatch(self, text: str, module: str) -> None:
-        self.obs.trigger("pyprotector_detect", text, module)
-
-    def disable(self) -> None:
-        self.obs.off("pyprotector_detect")
-
-    def enable(self) -> None:
-        self.obs.on("pyprotector_detect")
+    def dispatch(self, event: str, text: str, module: str, **kwargs) -> None:
+        self.obs.trigger(event, text, module, **kwargs)

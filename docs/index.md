@@ -1,4 +1,4 @@
-# PythonProtector
+# PythonProtector 🔒
 
 ![pyprotector](https://cdn.discordapp.com/attachments/1019356864548446269/1066498438386176102/image.png)
 

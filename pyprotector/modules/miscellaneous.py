@@ -25,7 +25,7 @@ from typing import Literal
 
 from ..types import Event, Logger
 from ..abc import Module
-from ..constants import Lists, UserInfo, Lists
+from ..constants import UserInfo, Lists
 from ..utils.http import hasInternet
 from ..utils.webhook import Webhook
 
@@ -52,7 +52,7 @@ class Miscellaneous(Module):
         while True:
             try:
                 time.sleep(5)
-                if hasInternet() == False:
+                if hasInternet() is False:
                     self.logger.info("CheckInternet Failed")
                     if self.exit:
                         os._exit(1)
@@ -61,17 +61,20 @@ class Miscellaneous(Module):
             except BaseException:
                 pass
 
-    def CheckRam(self) -> None:
+    def CheckRAM(self) -> None:
         memory: int = psutil.virtual_memory().total
         if memory <= 4294967296:
             self.logger.info("RAM Check Failed")
             if self.report:
                 self.webhook.send(
-                    f"Less than 4 GB of RAM exists on this system",
+                    "Less than 4 GB of RAM exists on this system",
                     self.name,
                 )
                 self.event.dispatch(
-                    "Less than 4 GB of RAM exists on this system", self.name
+                    "ram_check",
+                    "Less than 4 GB of RAM exists on this system",
+                    self.name,
+                    ram=memory,
                 )
             if self.exit:
                 os._exit(1)
@@ -82,8 +85,7 @@ class Miscellaneous(Module):
         if isDebuggerPresent:
             self.logger.send("IsDebuggerPresent Returned True")
             if self.report:
-                self.webhook.send(
-                    f"IsDebuggerPresent Returned True", self.name)
+                self.webhook.send("IsDebuggerPresent Returned True", self.name)
                 self.event.dispatch(
                     "IsDebuggerPresent Returned True", self.name)
             if self.exit:
@@ -112,7 +114,7 @@ class Miscellaneous(Module):
         if len(sys.argv) > 1:
             minDiskSizeGB = float(sys.argv[1])
         _, diskSizeBytes, _ = win32api.GetDiskFreeSpaceEx()
-        diskSizeGB = diskSizeBytes / 1073741824
+        diskSizeGB: int = diskSizeBytes / 1073741824
 
         if diskSizeGB < minDiskSizeGB:
             self.logger.info("Disk Check Failed")
@@ -121,8 +123,10 @@ class Miscellaneous(Module):
                     f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum"
                 )
                 self.event.dispatch(
+                    "disk_size_check",
                     f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum",
                     self.name,
+                    disk_size=diskSizeGB,
                 )
             if self.exit:
                 os._exit(1)
@@ -143,7 +147,12 @@ class Miscellaneous(Module):
                 self.logger.info("Blacklisted Path Found")
                 if self.report:
                     self.webhook.send("Blacklisted Path Found", self.name)
-                    self.event.dispatch("Blacklisted Path Found", self.name)
+                    self.event.dispatch(
+                        "blacklisted_path",
+                        "Blacklisted Path Found",
+                        self.name,
+                        path=path,
+                    )
                 if self.exit:
                     os._exit(1)
             else:
@@ -160,7 +169,12 @@ class Miscellaneous(Module):
                             f"`{package}` Was Found Installed",
                             self.name,
                         )
-                        self.event.dispatch(f"{package} Was Found Installed")
+                        self.event.dispatch(
+                            "blacklisted_import",
+                            f"{package} Was Found Installed",
+                            package=package,
+                            dist=dist,
+                        )
                     if self.exit:
                         os._exit(1)
                 else:
@@ -189,7 +203,10 @@ class Miscellaneous(Module):
                     f"`{UserInfo.IP}` Is A Blacklisted IP Address", self.name
                 )
                 self.event.dispatch(
-                    f"{UserInfo.IP} Is A Blacklisted IP Address", self.name
+                    "ip_check",
+                    f"{UserInfo.IP} Is A Blacklisted IP Address",
+                    self.name,
+                    ip=UserInfo.IP,
                 )
             if self.exit:
                 os._exit(1)
@@ -198,7 +215,7 @@ class Miscellaneous(Module):
 
     def CheckCPUCores(self) -> None:
         if int(psutil.cpu_count()) <= 1:
-            self.logger.info(f"CPU Core Count Is Less Than Or Equal To 1")
+            self.logger.info("CPU Core Count Is Less Than Or Equal To 1")
             if self.report:
                 self.webhook.send(
                     "CPU Core Count Is Less Than Or Equal To `1`", self.name
@@ -217,7 +234,12 @@ class Miscellaneous(Module):
                 self.logger.info("Proxy Headers In Use")
                 if self.report:
                     self.webhook.send("Proxy Headers Being Used", self.name)
-                    self.event.dispatch("Proxy Headers Being Used", self.name)
+                    self.event.dispatch(
+                        "proxy_headers",
+                        "Proxy Headers Being Used",
+                        self.name,
+                        header=header,
+                    )
                 if self.exit:
                     os._exit(1)
 
@@ -225,7 +247,11 @@ class Miscellaneous(Module):
             self.logger.info("Proxy IP In Use")
             if self.report:
                 self.webhook.send("Proxy IP Being Used", self.name)
-                self.event.dispatch("Proxy IP Being Used", self.name)
+                self.event.dispatch(
+                    "proxy_ip",
+                    "Proxy IP Being Used",
+                    self.name,
+                    ip=UserInfo.IP)
             if self.exit:
                 os._exit(1)
 
@@ -266,11 +292,12 @@ class Miscellaneous(Module):
         self.CheckPaths()
         self.CheckIPs()
         self.CheckCPUCores()
-        self.CheckRam()
+        self.CheckRAM()
         self.CheckIsDebuggerPresent()
         self.CheckOutPutDebugString()
         self.CheckDiskSize()
         self.KillTasks()
         self.IsUsingProxy()
+        self.logger.info("Finished Miscellaneous Checks")
 
         self.CheckInternet()

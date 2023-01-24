@@ -39,11 +39,9 @@ security = PythonProtector(
 # -- Example Event
 
 
-@security.event.obs.on(
-    "pyprotector_detect"
-)  # Only Event, Anything Other Than This Will Error.
-def on_detection(text: str, module: str):
-    print(f"{module} - {text}")
+@security.event.obs.on("process_running")
+def on_process_running(text: str, module: str, process):
+    print(f"{module} - {text}\nProcess Name: {process.name()}")
     # Free To Do Whatever You Want Here...
 
 

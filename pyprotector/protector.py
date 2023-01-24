@@ -24,7 +24,7 @@ from typing import Dict, Union, List, Optional
 from command_runner.elevate import is_admin
 from loguru import logger
 
-from .constants import ProtectorInfo, LoggingInfo, Valid
+from .constants import ProtectorInfo, LoggingInfo, UserInfo, Valid
 from .modules.process import AntiProcess
 from .modules.vm import AntiVM
 from .modules.dll import AntiDLL
@@ -48,10 +48,10 @@ class PythonProtector:
 
         Args:
                 debug (bool): Whether Or Not PythonProtector Should Log Actions.
-                modules (List[str]): List Of Modules You Would Like To Enable.
+                modules (Set[str]): List Of Modules You Would Like To Enable.
                 logs_path (Union[Path, str]): Path For PythonProtector Logs.
                 webhook_url (str): Webhook URL For Reporting Remotely.
-                on_detect (List[str], optional): List of Things PyProtector Does When Detections Are Caused
+                on_detect (Set[str], optional): List of Things PyProtector Does When Detections Are Caused
 
         Raises:
                 ModulesNotValid: Raises If Modules Are Not Valid
@@ -112,11 +112,11 @@ class PythonProtector:
 
         # -- Initialize Webhooks
         self.webhook_url: str = webhook_url
-        
+
         if self.report and self.webhook_url is None:
             raise RuntimeWarning(
                 "Reporting Was Set But No Webhook URL Was Provided.")
-            
+
         self.webhook: Webhook = Webhook(
             self.webhook_url, self.logs_path, self.screenshot
         )
@@ -140,13 +140,29 @@ class PythonProtector:
 
         # -- Debug Checks
         if self.debug:
-            self.event.enable()
             self.logger.enable("PythonProtector")
         else:
-            self.event.disable()
             self.logger.disable("PythonProtector")
 
-    def run_module_threads(self, debug: bool) -> None:
+    @property
+    def version(self):
+        """Returns The Current PythonProtector Version
+
+        Returns:
+            str (str): Version
+        """
+        return ProtectorInfo.VERSION
+
+    @property
+    def user(self):
+        """Returns a Tuple of User Information
+
+        Returns:
+            tuple: User Information
+        """
+        return (UserInfo.PC_NAME, UserInfo.USERNAME, UserInfo.HWID)
+
+    def _run_module_threads(self, debug: bool) -> None:
         if debug:
             if "Miscellaneous" in self.modules:
                 self.logger.info("Starting Miscellaneous Thread")
@@ -245,6 +261,6 @@ class PythonProtector:
 
             self.logger.info("Starting PythonProtector Services")
 
-            self.run_module_threads(debug=True)
+            self._run_module_threads(debug=True)
         else:
-            self.run_module_threads(debug=False)
+            self._run_module_threads(debug=False)

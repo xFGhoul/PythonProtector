@@ -55,12 +55,12 @@ class AntiProcess(Module):
                                 f"{process.name} Process Was Running")
                             if self.report:
                                 self.webhook.send(
-                                    f"`{process.name()}` was detected running on the system.",
-                                    self.name,
-                                )
+                                    f"`{process.name()}` was detected running on the system.", self.name, )
                                 self.event.dispatch(
+                                    "process_running",
                                     f"{process.name()} was detected running on the system.",
                                     self.name,
+                                    process=process,
                                 )
                             process.kill()
                             if self.exit:
@@ -71,28 +71,6 @@ class AntiProcess(Module):
                 pass
 
     def CheckWindowNames(self) -> None:
-        while True:
-            try:
-                time.sleep(0.7)
-                window_name: str = win32gui.GetWindowText(
-                    win32gui.GetForegroundWindow()
-                )
-                if window_name in Lists.BLACKLISTED_WINDOW_NAMES:
-                    self.logger.info(f"{window_name} Found")
-                    if self.report:
-                        self.webhook.send(
-                            f"Found `{window_name}` in Window Names", self.name
-                        )
-                        self.event.dispatch(
-                            f"Found {window_name} in Window Names", self.name
-                        )
-                    if self.exit:
-                        os._exit(1)
-            except (RuntimeError, NameError, TypeError, OSError) as error:
-                self.webhook.send(f"Error!: ```yaml\n{error}\n```")
-                pass
-
-    def CheckWindows(self) -> None:
         def winEnumHandler(hwnd, ctx) -> None:
             if win32gui.GetWindowText(hwnd).lower(
             ) in Lists.BLACKLISTED_WINDOW_NAMES:
@@ -111,9 +89,14 @@ class AntiProcess(Module):
                 self.logger.info(f"{win32gui.GetWindowText(hwnd)} Found")
                 if self.report:
                     self.webhook.send(
-                        f"Debugger {win32gui.GetWindowText(hwnd)}", self.name)
+                        f"Debugger {win32gui.GetWindowText(hwnd)}", self.name
+                    )
                     self.event.dispatch(
-                        f"Debugger {win32gui.GetWindowText(hwnd)} Found Open", self.name)
+                        "window_name_detected",
+                        f"Debugger {win32gui.GetWindowText(hwnd)} Found Open",
+                        self.name,
+                        window_name=win32gui.GetWindowText(hwnd),
+                    )
                 if self.exit:
                     os._exit(1)
 

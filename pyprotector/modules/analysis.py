@@ -12,7 +12,6 @@ Made With ❤️ By Ghoul & Marci
 import os
 import ctypes
 
-from typing import Any
 from ctypes import WinDLL
 
 from ..types import Event, Logger
@@ -75,7 +74,10 @@ class AntiAnalysis(Module):
                 self.logger.info("Debug Privilege Found Enabled")
                 if self.report:
                     self.webhook.send("Debug Privilege Enabled", self.name)
-                    self.event.dispatch("Debug Privilege Enabled", self.name)
+                    self.event.dispatch(
+                        "debug_privilege_found",
+                        "Debug Privilege Enabled",
+                        self.name)
                 if self.exit:
                     os._exit(1)
 
@@ -125,7 +127,11 @@ class AntiAnalysis(Module):
             self.logger.info("Debug Object Handle Found")
             if self.report:
                 self.webhook.send("Debug Object Handle Detected", self.name)
-                self.event.dispatch("Debug Object Handle Detected", self.name)
+                self.event.dispatch(
+                    "debug_object_handle_found",
+                    "Debug Object Handle Detected",
+                    self.name,
+                )
             if self.exit:
                 os._exit((1))
 
@@ -151,7 +157,9 @@ class AntiAnalysis(Module):
             self.logger.info("Debug Object Handle Found")
             if self.report:
                 self.webhook.send("Debug Object Handle Detected", self.name)
-                self.event.dispatch("Debug Object Handle Detected", self.name)
+                self.event.dispatch(
+                    "se_debug_name", "Debug Object Handle Detected", self.name
+                )
             if self.exit:
                 os._exit((1))
 
@@ -179,7 +187,10 @@ class AntiAnalysis(Module):
                 self.webhook.send(
                     "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block", self.name, )
                 self.event.dispatch(
-                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block", self.name, )
+                    "nt_global_flag_debugged",
+                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block",
+                    self.name,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -206,13 +217,16 @@ class AntiAnalysis(Module):
             if self.report:
                 self.webhook.send("Hardware Breakpoints Found Set", self.name)
                 self.event.dispatch(
-                    "Hardware Breakpoints Found Set", self.name)
+                    "hardware_breakpoint_set",
+                    "Hardware Breakpoints Found Set",
+                    self.name,
+                )
             if self.exit:
                 os._exit(1)
 
         self.kernel32.CloseHandle(hThread)
 
-    def CheckDebugging(self) -> None:
+    def CheckDebugFilterState(self) -> None:
         self.ntdll.DbgSetDebugFilterState(0, 0)
 
         DebugFilterState = ctypes.c_uint()
@@ -224,7 +238,10 @@ class AntiAnalysis(Module):
                 self.webhook.send(
                     "Debug Filter State `!= 0`, debugging detected", self.name
                 )
-                self.event.dispatch("Debug Filter State is not 0", self.name)
+                self.event.dispatch(
+                    "debug_filter_state",
+                    "Debug Filter State is not 0",
+                    self.name)
             if self.exit:
                 os._exit(1)
 
@@ -243,7 +260,10 @@ class AntiAnalysis(Module):
             self.logger.info("Process Being Debugged")
             if self.report:
                 self.webhook.send("Process Found Being Debugged", self.name)
-                self.event.dispatch("Process Found Being Debugged", self.name)
+                self.event.dispatch(
+                    "peb_being_debugged",
+                    "Process Found Being Debugged",
+                    self.name)
             if self.exit:
                 os._exit(1)
 
@@ -254,7 +274,10 @@ class AntiAnalysis(Module):
         self.CheckSEDebugName()
         self.CheckNtGlobalFlag()
         self.CheckHardwareBreakpoints()
-        self.CheckDebugging()
+        self.CheckDebugFilterState()
         self.CheckPEB()
+        self.logger.info("Finished All Analysis Checks")
 
+        self.logger.info("Hiding Threads")
         self.HideThreads()
+        self.logger.info("Threads Hidden")
