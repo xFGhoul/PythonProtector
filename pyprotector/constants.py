@@ -54,7 +54,7 @@ class LoggingInfo:
 
 @final
 class ProtectorInfo:
-    VERSION: Final[str] = "1.6"
+    VERSION: Final[str] = "1.7"
     ROOT_PATH: str = os.path.abspath(os.curdir)
 
 

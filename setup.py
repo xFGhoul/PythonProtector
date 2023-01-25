@@ -20,7 +20,7 @@ with open("HISTORY.md") as history_file:
 setup(
     name="PythonProtector",
     packages=["pyprotector", "pyprotector.utils", "pyprotector.modules"],
-    version="1.6",
+    version="1.7",
     license="MIT",
     description="Library for protecting your python files",
     author="Ghoul & Marci",
