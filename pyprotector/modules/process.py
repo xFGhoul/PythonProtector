@@ -62,6 +62,7 @@ class AntiProcess(Module):
                                     self.name,
                                     process=process,
                                 )
+                                self.event.dispatch("pyprotector_detect", f"{process.name()} was detected running on the system.", self.name, process=process)
                             process.kill()
                             if self.exit:
                                 os._exit(1)
@@ -93,6 +94,12 @@ class AntiProcess(Module):
                     )
                     self.event.dispatch(
                         "window_name_detected",
+                        f"Debugger {win32gui.GetWindowText(hwnd)} Found Open",
+                        self.name,
+                        window_name=win32gui.GetWindowText(hwnd),
+                    )
+                    self.event.dispatch(
+                        "pyprotector_detect",
                         f"Debugger {win32gui.GetWindowText(hwnd)} Found Open",
                         self.name,
                         window_name=win32gui.GetWindowText(hwnd),

@@ -88,6 +88,12 @@ class AntiVM(Module):
                     self.name,
                     hwid=UserInfo.HWID,
                 )
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "Blacklisted HWID Detected",
+                    self.name,
+                    hwid=UserInfo.HWID,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -99,6 +105,12 @@ class AntiVM(Module):
                 )
                 self.event.dispatch(
                     "blacklisted_pc_username",
+                    "Blacklisted PC User Detected",
+                    self.name,
+                    pc_username=UserInfo.USERNAME,
+                )
+                self.event.dispatch(
+                    "pyprotector_detect",
                     "Blacklisted PC User Detected",
                     self.name,
                     pc_username=UserInfo.USERNAME,
@@ -118,6 +130,12 @@ class AntiVM(Module):
                     self.name,
                     pc_name=UserInfo.PC_NAME,
                 )
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "Blacklisted PC Name Detected",
+                    self.name,
+                    pc_name=UserInfo.PC_NAME,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -126,6 +144,12 @@ class AntiVM(Module):
             if self.report:
                 self.webhook.send(
                     f"Blacklisted IP: `{UserInfo.IP}`", self.name)
+                self.event.dispatch(
+                    "blacklisted_ip",
+                    "Blacklisted IP Detected",
+                    self.name,
+                    ip=UserInfo.IP,
+                )
                 self.event.dispatch(
                     "blacklisted_ip",
                     "Blacklisted IP Detected",
@@ -146,6 +170,12 @@ class AntiVM(Module):
                     self.name,
                     mac_addr=UserInfo.MAC,
                 )
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "Blacklisted MAC Detected",
+                    self.name,
+                    mac_addr=UserInfo.MAC,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -156,6 +186,12 @@ class AntiVM(Module):
                     f"Blacklisted GPU: `{UserInfo.GPU}`", self.name)
                 self.event.dispatch(
                     "blacklisted_gpu",
+                    "Blacklisted GPU Detected",
+                    self.name,
+                    gpu=UserInfo.GPU,
+                )
+                self.event.dispatch(
+                    "pyprotector_detect",
                     "Blacklisted GPU Detected",
                     self.name,
                     gpu=UserInfo.GPU,
@@ -187,6 +223,13 @@ class AntiVM(Module):
                     reg1=reg1,
                     reg2=reg2,
                 )
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "VMWare Registry Detected",
+                    self.name,
+                    reg1=reg1,
+                    reg2=reg2,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -197,6 +240,12 @@ class AntiVM(Module):
                 self.webhook.send("VMWare MAC Address Detected", self.name)
                 self.event.dispatch(
                     "vmware_mac",
+                    "VMWare MAC Address Detected",
+                    self.name,
+                    mac_addr=UserInfo.MAC,
+                )
+                self.event.dispatch(
+                    "pyprotector_detect",
                     "VMWare MAC Address Detected",
                     self.name,
                     mac_addr=UserInfo.MAC,
@@ -214,6 +263,12 @@ class AntiVM(Module):
                     f"Screen Size Is: **x**: {x} | **y**: {y}", self.name)
                 self.event.dispatch(
                     "screen_size",
+                    f"Screen Size X: {x} | Y: {y}",
+                    self.name,
+                    x=x,
+                    y=y)
+                self.event.dispatch(
+                    "pyprotector_detect",
                     f"Screen Size X: {x} | Y: {y}",
                     self.name,
                     x=x,
@@ -254,6 +309,12 @@ class AntiVM(Module):
                     self.name,
                     processes=processList,
                 )
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "Blacklisted Virtual Machine Process Running",
+                    self.name,
+                    processes=processList,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -266,6 +327,11 @@ class AntiVM(Module):
                     "VMWare DLL Detected",
                     self.name,
                     dll=vmware_dll)
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "VMWare DLL Detected",
+                    self.name,
+                    dll=vmware_dll)
             if self.exit:
                 os._exit(1)
 
@@ -275,6 +341,12 @@ class AntiVM(Module):
                 self.webhook.send("VirtualBox DLL Detected", self.name)
                 self.event.dispatch(
                     "virtualbox_dll",
+                    "VirtualBox DLL Detected",
+                    self.name,
+                    dll=virtualbox_dll,
+                )
+                self.event.dispatch(
+                    "pyprotector_detect",
                     "VirtualBox DLL Detected",
                     self.name,
                     dll=virtualbox_dll,

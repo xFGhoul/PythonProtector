@@ -10,6 +10,7 @@ Made With ❤️ By Ghoul & Marci
 """
 
 __version__ = "1.7"
+__source__ = "https://github.com/xFGhoul/PythonProtector"
 
 from .protector import PythonProtector
 

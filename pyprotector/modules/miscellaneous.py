@@ -76,6 +76,12 @@ class Miscellaneous(Module):
                     self.name,
                     ram=memory,
                 )
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "Less than 4 GB of RAM exists on this system",
+                    self.name,
+                    ram=memory,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -86,7 +92,9 @@ class Miscellaneous(Module):
             self.logger.send("IsDebuggerPresent Returned True")
             if self.report:
                 self.webhook.send("IsDebuggerPresent Returned True", self.name)
-                self.event.dispatch(
+                self.event.dispatch("is_debugger_present",
+                    "IsDebuggerPresent Returned True", self.name)
+                self.event.dispatch("pyprotector_detect",
                     "IsDebuggerPresent Returned True", self.name)
             if self.exit:
                 os._exit(1)
@@ -103,7 +111,10 @@ class Miscellaneous(Module):
                     "CheckRemoteDebuggerPresent Returned True",
                     self.name,
                 )
-                self.event.dispatch(
+                self.event.dispatch("check_remote_debugger_present",
+                    "CheckRemoteDebuggerPresent Returned True", self.name
+                )
+                self.event.dispatch("pyprotector_detect",
                     "CheckRemoteDebuggerPresent Returned True", self.name
                 )
             if self.exit:
@@ -124,6 +135,12 @@ class Miscellaneous(Module):
                 )
                 self.event.dispatch(
                     "disk_size_check",
+                    f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum",
+                    self.name,
+                    disk_size=diskSizeGB,
+                )
+                self.event.dispatch(
+                    "pyprotector_detect",
                     f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum",
                     self.name,
                     disk_size=diskSizeGB,
@@ -153,6 +170,12 @@ class Miscellaneous(Module):
                         self.name,
                         path=path,
                     )
+                    self.event.dispatch(
+                        "pyprotector_detect",
+                        "Blacklisted Path Found",
+                        self.name,
+                        path=path,
+                    )
                 if self.exit:
                     os._exit(1)
             else:
@@ -175,6 +198,12 @@ class Miscellaneous(Module):
                             package=package,
                             dist=dist,
                         )
+                        self.event.dispatch(
+                            "pyprotector_detect",
+                            f"{package} Was Found Installed",
+                            package=package,
+                            dist=dist,
+                        )
                     if self.exit:
                         os._exit(1)
                 else:
@@ -190,7 +219,9 @@ class Miscellaneous(Module):
             if self.report:
                 self.webhook.send(
                     "OutputDebugString Not Equal To 0", self.name)
-                self.event.dispatch(
+                self.event.dispatch("output_debug_string",
+                    "OutputDebugString Not Equal To 0", self.name)
+                self.event.dispatch("pyprotector_detect",
                     "OutputDebugString Not Equal To 0", self.name)
             if self.exit:
                 os._exit(1)
@@ -208,6 +239,12 @@ class Miscellaneous(Module):
                     self.name,
                     ip=UserInfo.IP,
                 )
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    f"{UserInfo.IP} Is A Blacklisted IP Address",
+                    self.name,
+                    ip=UserInfo.IP,
+                )
             if self.exit:
                 os._exit(1)
         else:
@@ -220,7 +257,10 @@ class Miscellaneous(Module):
                 self.webhook.send(
                     "CPU Core Count Is Less Than Or Equal To `1`", self.name
                 )
-                self.event.dispatch(
+                self.event.dispatch("cpu_count"
+                    "CPU Core Count Is Less Than Or Equal To 1", self.name
+                )
+                self.event.dispatch("pyprotector_detect"
                     "CPU Core Count Is Less Than Or Equal To 1", self.name
                 )
             if self.exit:
@@ -240,6 +280,12 @@ class Miscellaneous(Module):
                         self.name,
                         header=header,
                     )
+                    self.event.dispatch(
+                        "pyprotector_detect",
+                        "Proxy Headers Being Used",
+                        self.name,
+                        header=header,
+                    )
                 if self.exit:
                     os._exit(1)
 
@@ -249,6 +295,11 @@ class Miscellaneous(Module):
                 self.webhook.send("Proxy IP Being Used", self.name)
                 self.event.dispatch(
                     "proxy_ip",
+                    "Proxy IP Being Used",
+                    self.name,
+                    ip=UserInfo.IP)
+                self.event.dispatch(
+                    "pyprotector_detect",
                     "Proxy IP Being Used",
                     self.name,
                     ip=UserInfo.IP)
@@ -266,7 +317,8 @@ class Miscellaneous(Module):
                 self.logger.info("Tor Network Detected")
                 if self.report:
                     self.webhook.send("Tor Network In Use", self.name)
-                    self.event.dispatch("Tor Network In Use", self.name)
+                    self.event.dispatch("tor_network", "Tor Network In Use", self.name)
+                    self.event.dispatch("pyprotector_detect", "Tor Network In Use", self.name)
                 if self.exit:
                     os._exit(1)
         except Exception:
@@ -279,7 +331,9 @@ class Miscellaneous(Module):
                 if self.report:
                     self.webhook.send(
                         "Transparent Proxies Detected", self.name)
-                    self.event.dispatch(
+                    self.event.dispatch("transparent_proxies",
+                        "Transparent Proxies Detected", self.name)
+                    self.event.dispatch("pyprotector_detect",
                         "Transparent Proxies Detected", self.name)
                 if self.exit:
                     os._exit(1)

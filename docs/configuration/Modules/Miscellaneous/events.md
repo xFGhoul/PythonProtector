@@ -1,10 +1,34 @@
 ### Miscellaneous
 
 ```py
+is_debugger_present()
+```
+
+Called When IsDebuggerPresent Returns True
+
+```py
+check_remote_debugger_present()
+```
+
+Called When CheckRemoteDebuggerPresent Returns True
+
+```py
+output_debug_string()
+```
+
+Called When `OutputDebugString` != 0
+
+```py
 ram_check(ram: int)
 ```
 
 Called When RAM Check Failed
+
+```py
+cpu_count()
+```
+
+Called When CPU Core Count Is Less Than OR Equal To `1`
 
 ##### Parameters
 
@@ -70,3 +94,14 @@ Called When Proxy IP Found
 
 - `ip` ([`str`](https://docs.python.org/3/library/stdtypes.html#str)) - Proxy IP
 
+```py
+tor_network()
+```
+
+Called When A Tor Network Is Found In Use
+
+```py
+transparent_proxies()
+```
+
+Called When Transparent Proxies Detected

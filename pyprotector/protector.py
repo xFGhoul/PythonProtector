@@ -19,7 +19,7 @@ import cpuinfo
 import datetime
 from pathlib import Path
 from threading import Thread
-from typing import Dict, Union, List, Optional
+from typing import Dict, Union, List, Tuple, Optional
 
 from command_runner.elevate import is_admin
 from loguru import logger
@@ -145,22 +145,31 @@ class PythonProtector:
             self.logger.disable("PythonProtector")
 
     @property
-    def version(self):
+    def version(self) -> str:
         """Returns The Current PythonProtector Version
 
         Returns:
-            str (str): Version
+            str: PythonProtector Version
         """
         return ProtectorInfo.VERSION
 
     @property
-    def user(self):
+    def user(self) -> Tuple[str, str, str]:
         """Returns a Tuple of User Information
 
         Returns:
             tuple: User Information
         """
         return (UserInfo.PC_NAME, UserInfo.USERNAME, UserInfo.HWID)
+    
+    @property
+    def ip(self) -> str:
+        """Returns The Current IP Address
+
+        Returns:
+            str: User's IP Address
+        """
+        return UserInfo.IP
 
     def _run_module_threads(self, debug: bool) -> None:
         if debug:

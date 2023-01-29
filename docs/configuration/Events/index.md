@@ -2,7 +2,17 @@
 
 `Events` is a system implemented to notify when a specific function has raised a detection.
 
-Example Event:
+There are two events that are called when the application detects suspicious activity, `pyprotector_detect` and the function's specific event found in the event reference.
+
+Example `pyprotector_detect` Event:
+
+```py
+@security.event.obs.on("pyprotector_detect")
+def on_pyprotector_detect(text: str, module: str, **kwargs):
+    print(f"{module} - {text}\nKwargs: {kwargs}")
+```
+
+Example Function Specific Event:
 
 ```py
 @security.event.obs.on("process_running") 

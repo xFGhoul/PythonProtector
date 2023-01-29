@@ -80,6 +80,13 @@ class AntiDLL(Module):
                             {EvidenceOfSandbox},
                             dlls=EvidenceOfSandbox,
                         )
+                        self.event.dispatch(
+                            "pyprotector_detect",
+                            f"The following DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
+                            self.name,
+                            {EvidenceOfSandbox},
+                            dlls=EvidenceOfSandbox,
+                        )
                     if self.exit:
                         os._exit(1)
             except BaseException:
