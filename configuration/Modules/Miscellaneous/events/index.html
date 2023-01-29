@@ -919,27 +919,39 @@
   <h1>Event Reference</h1>
 
 <h3 id="miscellaneous">Miscellaneous</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ram_check</span><span class="p">(</span><span class="n">ram</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">is_debugger_present</span><span class="p">()</span>
+</code></pre></div>
+<p>Called When IsDebuggerPresent Returns True</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">check_remote_debugger_present</span><span class="p">()</span>
+</code></pre></div>
+<p>Called When CheckRemoteDebuggerPresent Returns True</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">output_debug_string</span><span class="p">()</span>
+</code></pre></div>
+<p>Called When <code>OutputDebugString</code> != 0</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">ram_check</span><span class="p">(</span><span class="n">ram</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
 </code></pre></div>
 <p>Called When RAM Check Failed</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">cpu_count</span><span class="p">()</span>
+</code></pre></div>
+<p>Called When CPU Core Count Is Less Than OR Equal To <code>1</code></p>
 <h5 id="parameters">Parameters</h5>
 <ul>
 <li><code>memory</code> (<a href="https://docs.python.org/3/library/stdtypes.html#typesnumeric"><code>int</code></a>) - Current RAM </li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">disk_size_check</span><span class="p">(</span><span class="n">disk_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">disk_size_check</span><span class="p">(</span><span class="n">disk_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
 </code></pre></div>
 <p>Called When Disk Size Check Failed</p>
 <h5 id="parameters_1">Parameters</h5>
 <ul>
 <li><code>disk_size</code> (<a href="https://docs.python.org/3/library/stdtypes.html#typesnumeric"><code>int</code></a>) - Current Disk Size</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">blacklisted_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">blacklisted_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
 </code></pre></div>
 <p>Called When Blacklisted Path Found</p>
 <ul>
 <li><code>path</code> (<a href="https://docs.python.org/3/library/stdtypes.html#str"><code>str</code></a>) - Blacklisted Path</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">blacklisted_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dist</span><span class="p">:</span> <span class="n">Distribution</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">blacklisted_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dist</span><span class="p">:</span> <span class="n">Distribution</span><span class="p">)</span>
 </code></pre></div>
 <p>Called When Blacklisted Import Found</p>
 <h5 id="parameters_2">Parameters</h5>
@@ -947,27 +959,33 @@
 <li><code>package</code> (<a href="https://docs.python.org/3/library/stdtypes.html#str"><code>str</code></a>) - Name Of Package</li>
 <li><code>dist</code> (<a href="https://setuptools.pypa.io/en/latest/pkg_resources.html#distribution-objects"><code>Distribution</code></a>) - Distribution Object</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">ip_check</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">ip_check</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
 </code></pre></div>
 <p>Called When Blacklisted IP Found</p>
 <h5 id="parameters_3">Parameters</h5>
 <ul>
 <li><code>ip</code> (<a href="https://docs.python.org/3/library/stdtypes.html#str"><code>str</code></a>) - Blacklisted IP</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">proxy_headers</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">proxy_headers</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
 </code></pre></div>
 <p>Called When Proxy Headers Found</p>
 <h5 id="parameters_4">Parameters</h5>
 <ul>
 <li><code>header</code> (<a href="https://docs.python.org/3/library/stdtypes.html#str"><code>str</code></a>) - Proxy Header</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">proxy_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">proxy_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
 </code></pre></div>
 <p>Called When Proxy IP Found</p>
 <h5 id="parameters_5">Parameters</h5>
 <ul>
 <li><code>ip</code> (<a href="https://docs.python.org/3/library/stdtypes.html#str"><code>str</code></a>) - Proxy IP</li>
 </ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">tor_network</span><span class="p">()</span>
+</code></pre></div>
+<p>Called When A Tor Network Is Found In Use</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">transparent_proxies</span><span class="p">()</span>
+</code></pre></div>
+<p>Called When Transparent Proxies Detected</p>
 
 
 
