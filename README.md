@@ -52,7 +52,8 @@ security = PythonProtector(
         "AntiVM",
         "Miscellaneous",
         "AntiDLL",
-        "AntiAnalysis"],
+        "AntiAnalysis",
+        "AntiDump"],
     logs_path=LOGGING_PATH,
     webhook_url="",
     on_detect=[

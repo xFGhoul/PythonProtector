@@ -11,9 +11,7 @@ Made With ❤️ By Ghoul & Marci
 
 import ctypes
 import os
-import re
 import sys
-import uuid
 
 import httpx
 
@@ -64,8 +62,12 @@ class AntiVM(Module):
         ).text
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Anti VM"
+    
+    @property
+    def version(self) -> int:
+        return 1.0
 
     def _get_base_prefix_compat(self) -> None:
         return (
@@ -272,7 +274,8 @@ class AntiVM(Module):
                     f"Screen Size X: {x} | Y: {y}",
                     self.name,
                     x=x,
-                    y=y)
+                    y=y,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -331,7 +334,8 @@ class AntiVM(Module):
                     "pyprotector_detect",
                     "VMWare DLL Detected",
                     self.name,
-                    dll=vmware_dll)
+                    dll=vmware_dll,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -355,11 +359,13 @@ class AntiVM(Module):
                 os._exit(1)
 
     def StartChecks(self) -> None:
-        self.logger.info("Starting VM Checks")
+        if self.report:
+            self.logger.info("Starting VM Checks")
         self.CheckVirtualEnv()
         self.CheckRegistry()
         self.CheckMacAddress()
         self.CheckScreenSize()
         self.CheckProcessesAndFiles()
         self.CheckLists()
-        self.logger.info("Finished VM Checks")
+        if self.report:
+            self.logger.info("Finished VM Checks")

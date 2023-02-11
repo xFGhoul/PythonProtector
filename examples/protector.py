@@ -27,13 +27,12 @@ security = PythonProtector(
         "AntiVM",
         "Miscellaneous",
         "AntiDLL",
-        "AntiAnalysis"],
+        "AntiAnalysis",
+        "AntiDump",
+    ],
     logs_path=LOGGING_PATH,
     webhook_url="",
-    on_detect=[
-        "Report",
-        "Exit",
-        "Screenshot"],
+    on_detect=["Report", "Exit", "Screenshot"],
 )
 
 # -- Example Event
@@ -42,6 +41,7 @@ security = PythonProtector(
 @security.event.obs.on("process_running")
 def on_process_running(text: str, module: str, process):
     print(f"{module} - {text}\nProcess Name: {process.name()}")
+    print(security.user)
     # Free To Do Whatever You Want Here...
 
 

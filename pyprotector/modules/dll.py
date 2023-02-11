@@ -37,8 +37,12 @@ class AntiDLL(Module):
         self.event: Event = event
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Anti DLL"
+    
+    @property
+    def version(self) -> int:
+        return 1.0
 
     def BlockDLLs(self) -> None:
         while True:

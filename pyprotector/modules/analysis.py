@@ -37,8 +37,12 @@ class AntiAnalysis(Module):
         self.ntdll: WinDLL = ctypes.windll.ntdll
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Anti Analysis"
+    
+    @property
+    def version(self) -> int:
+        return 1.0
 
     def CheckDebugPrivilege(self) -> None:
         hToken = ctypes.c_void_p()
@@ -88,7 +92,6 @@ class AntiAnalysis(Module):
         self.ntdll.NtClose(hToken)
 
     def HideThreads(self) -> None:
-        self.logger.info("Hiding Threads")
         PID = self.kernel32.GetCurrentProcessId()
         hProcess = self.kernel32.OpenProcess(0x1F0FFF, False, PID)
         if hProcess is None:
@@ -107,7 +110,6 @@ class AntiAnalysis(Module):
 
         self.kernel32.CloseHandle(hThread)
         self.kernel32.CloseHandle(hProcess)
-        self.logger.info("Threads Hidden")
 
     def CheckDebugObject(self) -> None:
         PID = self.kernel32.GetCurrentProcessId()
@@ -170,8 +172,9 @@ class AntiAnalysis(Module):
                     "se_debug_name", "Debug Object Handle Detected", self.name
                 )
                 self.event.dispatch(
-                    "pyprotector_detect", "Debug Object Handle Detected", self.name
-                )
+                    "pyprotector_detect",
+                    "Debug Object Handle Detected",
+                    self.name)
             if self.exit:
                 os._exit((1))
 
@@ -298,7 +301,8 @@ class AntiAnalysis(Module):
                 os._exit(1)
 
     def StartAnalyzing(self) -> None:
-        self.logger.info("Starting Analysis Checks")
+        if self.report:
+            self.logger.info("Starting Analysis Checks")
         self.CheckDebugPrivilege()
         self.CheckDebugObject()
         self.CheckSEDebugName()
@@ -306,8 +310,11 @@ class AntiAnalysis(Module):
         self.CheckHardwareBreakpoints()
         self.CheckDebugFilterState()
         self.CheckPEB()
-        self.logger.info("Finished All Analysis Checks")
+        if self.report:
+            self.logger.info("Finished All Analysis Checks")
 
-        self.logger.info("Hiding Threads")
+        if self.report:
+            self.logger.info("Hiding Threads")
         self.HideThreads()
-        self.logger.info("Threads Hidden")
+        if self.report:
+            self.logger.info("Threads Hidden")

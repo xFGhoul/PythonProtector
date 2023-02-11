@@ -23,5 +23,10 @@ class Module(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def name(self):
+    def name(self) -> str:
+        pass
+    
+    @property
+    @abstractmethod
+    def version(self) -> float:
         pass

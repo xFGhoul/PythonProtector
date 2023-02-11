@@ -53,9 +53,25 @@ Returns a Tuple of User Information
 
 [`tuple`](https://docs.python.org/3/library/functions.html#func-tuple)
 
+#### `ip`
+
+Returns The Current Users IP
+
+##### Type
+
+[`str`](https://docs.python.org/3/library/stdtypes.html#str)
+
+#### `computer`
+
+Returns The Current Users WMI Computer Object
+
+##### Type
+
+[`typing.Any`](https://docs.python.org/3/library/typing.html#the-any-type)
+
 ## Extra Notes
 
-List of Valid Modules:
+#### List of Valid Modules:
 
 ```py
 Modules: Final[Set[str]] = {
@@ -67,7 +83,7 @@ Modules: Final[Set[str]] = {
     }
 ```
 
-List of Valid Detections:
+#### List of Valid Detections:
 
 ```py
 Detections: Final[Set[str]] = {"Screenshot", "Exit", "Report"}

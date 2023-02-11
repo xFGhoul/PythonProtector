@@ -45,21 +45,24 @@ class Miscellaneous(Module):
         self.event: Event = event
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__class__.__name__
+    
+    @property
+    def version(self) -> int:
+        return 1.0
+    
 
     def CheckInternet(self) -> None:
         while True:
-            try:
-                time.sleep(5)
-                if hasInternet() is False:
+            time.sleep(5)
+            if hasInternet() is False:
+                if self.report:
                     self.logger.info("CheckInternet Failed")
-                    if self.exit:
-                        os._exit(1)
-                else:
+                if self.exit:
+                    os._exit(1)
+            else:
                     pass
-            except BaseException:
-                pass
 
     def CheckRAM(self) -> None:
         memory: int = psutil.virtual_memory().total
@@ -92,10 +95,14 @@ class Miscellaneous(Module):
             self.logger.send("IsDebuggerPresent Returned True")
             if self.report:
                 self.webhook.send("IsDebuggerPresent Returned True", self.name)
-                self.event.dispatch("is_debugger_present",
-                    "IsDebuggerPresent Returned True", self.name)
-                self.event.dispatch("pyprotector_detect",
-                    "IsDebuggerPresent Returned True", self.name)
+                self.event.dispatch(
+                    "is_debugger_present",
+                    "IsDebuggerPresent Returned True",
+                    self.name)
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "IsDebuggerPresent Returned True",
+                    self.name)
             if self.exit:
                 os._exit(1)
 
@@ -111,11 +118,15 @@ class Miscellaneous(Module):
                     "CheckRemoteDebuggerPresent Returned True",
                     self.name,
                 )
-                self.event.dispatch("check_remote_debugger_present",
-                    "CheckRemoteDebuggerPresent Returned True", self.name
+                self.event.dispatch(
+                    "check_remote_debugger_present",
+                    "CheckRemoteDebuggerPresent Returned True",
+                    self.name,
                 )
-                self.event.dispatch("pyprotector_detect",
-                    "CheckRemoteDebuggerPresent Returned True", self.name
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "CheckRemoteDebuggerPresent Returned True",
+                    self.name,
                 )
             if self.exit:
                 os._exit(1)
@@ -149,14 +160,31 @@ class Miscellaneous(Module):
                 os._exit(1)
 
     def KillTasks(self) -> None:
-        self.logger.info("Killing Tasks")
         os.system("taskkill /f /im HTTPDebuggerUI.exe >nul 2>&1")
         os.system("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1")
+        os.system('taskkill /FI "IMAGENAME eq cheatengine*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq httpdebugger*" /IM * /F /T >nul 2>&1')
+        os.system(
+            'taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq fiddler*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq wireshark*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq rawshark*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq charles*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq cheatengine*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq ida*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq httpdebugger*" /IM * /F /T >nul 2>&1')
+        os.system(
+            'taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
+        os.system("sc stop HTTPDebuggerPro >nul 2>&1")
+        os.system("sc stop KProcessHacker3 >nul 2>&1")
+        os.system("sc stop KProcessHacker2 >nul 2>&1")
+        os.system("sc stop KProcessHacker1 >nul 2>&1")
+        os.system("sc stop wireshark >nul 2>&1")
+        os.system("sc stop npf >nul 2>&1")
         os.system("sc stop HTTPDebuggerPro >nul 2>&1")
         os.system(
             'cmd.exe /c @RD /S /Q "C:\\Users\\%username%\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE" >nul 2>&1'
         )
-        self.logger.info("All Tasks Killed")
 
     def CheckPaths(self) -> None:
         for path in Lists.BLACKLISTED_PATHS:
@@ -219,10 +247,14 @@ class Miscellaneous(Module):
             if self.report:
                 self.webhook.send(
                     "OutputDebugString Not Equal To 0", self.name)
-                self.event.dispatch("output_debug_string",
-                    "OutputDebugString Not Equal To 0", self.name)
-                self.event.dispatch("pyprotector_detect",
-                    "OutputDebugString Not Equal To 0", self.name)
+                self.event.dispatch(
+                    "output_debug_string",
+                    "OutputDebugString Not Equal To 0",
+                    self.name)
+                self.event.dispatch(
+                    "pyprotector_detect",
+                    "OutputDebugString Not Equal To 0",
+                    self.name)
             if self.exit:
                 os._exit(1)
 
@@ -257,12 +289,13 @@ class Miscellaneous(Module):
                 self.webhook.send(
                     "CPU Core Count Is Less Than Or Equal To `1`", self.name
                 )
-                self.event.dispatch("cpu_count"
-                    "CPU Core Count Is Less Than Or Equal To 1", self.name
-                )
-                self.event.dispatch("pyprotector_detect"
-                    "CPU Core Count Is Less Than Or Equal To 1", self.name
-                )
+                self.event.dispatch(
+                    "cpu_count"
+                    "CPU Core Count Is Less Than Or Equal To 1",
+                    self.name)
+                self.event.dispatch(
+                    "pyprotector_detect"
+                    "CPU Core Count Is Less Than Or Equal To 1", self.name, )
             if self.exit:
                 os._exit(1)
 
@@ -302,7 +335,8 @@ class Miscellaneous(Module):
                     "pyprotector_detect",
                     "Proxy IP Being Used",
                     self.name,
-                    ip=UserInfo.IP)
+                    ip=UserInfo.IP,
+                )
             if self.exit:
                 os._exit(1)
 
@@ -317,8 +351,11 @@ class Miscellaneous(Module):
                 self.logger.info("Tor Network Detected")
                 if self.report:
                     self.webhook.send("Tor Network In Use", self.name)
-                    self.event.dispatch("tor_network", "Tor Network In Use", self.name)
-                    self.event.dispatch("pyprotector_detect", "Tor Network In Use", self.name)
+                    self.event.dispatch(
+                        "tor_network", "Tor Network In Use", self.name)
+                    self.event.dispatch(
+                        "pyprotector_detect", "Tor Network In Use", self.name
+                    )
                 if self.exit:
                     os._exit(1)
         except Exception:
@@ -331,17 +368,22 @@ class Miscellaneous(Module):
                 if self.report:
                     self.webhook.send(
                         "Transparent Proxies Detected", self.name)
-                    self.event.dispatch("transparent_proxies",
-                        "Transparent Proxies Detected", self.name)
-                    self.event.dispatch("pyprotector_detect",
-                        "Transparent Proxies Detected", self.name)
+                    self.event.dispatch(
+                        "transparent_proxies",
+                        "Transparent Proxies Detected",
+                        self.name)
+                    self.event.dispatch(
+                        "pyprotector_detect",
+                        "Transparent Proxies Detected",
+                        self.name)
                 if self.exit:
                     os._exit(1)
         except Exception:
             pass
 
     def StartChecks(self) -> None:
-        self.logger.info("Starting Miscellaneous Checks")
+        if self.report:
+            self.logger.info("Starting Miscellaneous Checks")
         self.CheckImports()
         self.CheckPaths()
         self.CheckIPs()
@@ -352,6 +394,7 @@ class Miscellaneous(Module):
         self.CheckDiskSize()
         self.KillTasks()
         self.IsUsingProxy()
-        self.logger.info("Finished Miscellaneous Checks")
+        if self.report:
+            self.logger.info("Finished Miscellaneous Checks")
 
         self.CheckInternet()

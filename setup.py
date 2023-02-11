@@ -20,7 +20,7 @@ with open("HISTORY.md") as history_file:
 setup(
     name="PythonProtector",
     packages=["pyprotector", "pyprotector.utils", "pyprotector.modules"],
-    version="1.7",
+    version="1.8",
     license="MIT",
     description="Library for protecting your python files",
     author="Ghoul & Marci",
@@ -51,9 +51,7 @@ setup(
         "httpx",
         "WMI",
         "pywin32",
-        "numpy",
-        "pyautogui",
-        "opencv-python",
+        "Pillow",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",

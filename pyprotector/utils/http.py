@@ -13,13 +13,30 @@ import httpx
 
 
 def getIPAddress() -> str:
-    response = httpx.get("https://ipinfo.io/json").json()
+    try:
+        response = httpx.get("https://ipinfo.io/json").json()
+    except (
+        httpx.TimeoutException,
+        httpx.RequestError,
+        httpx.ConnectError,
+        httpx.HTTPError,
+    ):
+        return "No IP Address"
+
     ip = response.get("ip")
     return ip
 
 
 def hasInternet() -> bool:
-    if httpx.get("https://google.com"):
-        return True
-    else:
+    try:
+        if httpx.get("https://google.com"):
+            return True
+        else:
+            return False
+    except (
+        httpx.TimeoutException,
+        httpx.RequestError,
+        httpx.ConnectError,
+        httpx.HTTPError,
+    ):
         return False

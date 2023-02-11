@@ -19,7 +19,7 @@ import cpuinfo
 import datetime
 from pathlib import Path
 from threading import Thread
-from typing import Dict, Union, List, Tuple, Optional
+from typing import Dict, Union, List, Tuple, Any, Optional
 
 from command_runner.elevate import is_admin
 from loguru import logger
@@ -30,6 +30,7 @@ from .modules.vm import AntiVM
 from .modules.dll import AntiDLL
 from .modules.miscellaneous import Miscellaneous
 from .modules.analysis import AntiAnalysis
+from .modules.dump import AntiDump
 from .utils.events import ProtectorObservable
 from .utils.webhook import Webhook
 from .utils.exceptions import ModulesNotValid, DetectionsNotValid, LogsPathEmpty
@@ -40,18 +41,18 @@ class PythonProtector:
         self,
         debug: Optional[bool],
         modules: List[str],
-        logs_path: Optional[Union[Path, str]],
         webhook_url: Optional[str],
         on_detect: Optional[List[str]],
+        logs_path: Optional[Union[Path, str]] = None,
     ) -> None:
         """Main PythonProtector Class
 
         Args:
                 debug (bool): Whether Or Not PythonProtector Should Log Actions.
                 modules (Set[str]): List Of Modules You Would Like To Enable.
-                logs_path (Union[Path, str]): Path For PythonProtector Logs.
                 webhook_url (str): Webhook URL For Reporting Remotely.
                 on_detect (Set[str], optional): List of Things PyProtector Does When Detections Are Caused
+                logs_path (Union[Path, str]): Path For PythonProtector Logs.
 
         Raises:
                 ModulesNotValid: Raises If Modules Are Not Valid
@@ -85,22 +86,23 @@ class PythonProtector:
             raise RuntimeWarning(
                 "Logs Path Was Provided But Debug Was Disabled.")
 
-        LOGGING_CONFIG: Dict = {
-            "handlers": [
-                {
-                    "sink": self.logs_path,
-                    "format": LoggingInfo.encrypted_formatter,
-                    "enqueue": True,
-                    "rotation": "daily",
-                    "mode": "w",
-                    "level": "INFO",
-                    "serialize": False,
-                    "backtrace": False,
-                    "catch": False,
-                },
-            ],
-        }
-        self.logger.configure(**LOGGING_CONFIG)
+        if self.debug and self.logs_path:
+            LOGGING_CONFIG: Dict = {
+                "handlers": [
+                    {
+                        "sink": self.logs_path,
+                        "format": LoggingInfo.encrypted_formatter,
+                        "enqueue": True,
+                        "rotation": "daily",
+                        "mode": "w",
+                        "level": "INFO",
+                        "serialize": False,
+                        "backtrace": False,
+                        "catch": False,
+                    },
+                ],
+            }
+            self.logger.configure(**LOGGING_CONFIG)
 
         # -- Initialize Constants
         self.screenshot: bool = True if "Screenshot" in self.detections else False
@@ -108,7 +110,7 @@ class PythonProtector:
         self.report: bool = True if "Report" in self.detections else False
 
         # -- Initialize Events
-        self.event = ProtectorObservable()
+        self.event: ProtectorObservable = ProtectorObservable()
 
         # -- Initialize Webhooks
         self.webhook_url: str = webhook_url
@@ -137,6 +139,9 @@ class PythonProtector:
         self.AntiAnalysis: AntiAnalysis = AntiAnalysis(
             self.webhook, self.logger, self.exit, self.report, self.event
         )
+        self.AntiDump: AntiDump = AntiDump(
+            self.webhook, self.logger, self.exit, self.report, self.event
+        )
 
         # -- Debug Checks
         if self.debug:
@@ -161,7 +166,7 @@ class PythonProtector:
             tuple: User Information
         """
         return (UserInfo.PC_NAME, UserInfo.USERNAME, UserInfo.HWID)
-    
+
     @property
     def ip(self) -> str:
         """Returns The Current IP Address
@@ -170,6 +175,16 @@ class PythonProtector:
             str: User's IP Address
         """
         return UserInfo.IP
+
+    @property
+    def computer(self) -> Any:
+        """Returns The Current Users WMI Computer Object
+
+        Returns:
+            Any: Computer Object
+        """
+        return UserInfo.COMPUTER
+    
 
     def _run_module_threads(self, debug: bool) -> None:
         if debug:
@@ -202,6 +217,12 @@ class PythonProtector:
                 Thread(name=self.AntiAnalysis.name,
                        target=self.AntiAnalysis.StartAnalyzing).start()
                 self.logger.info("Anti Analysis Thread Started")
+            if "AntiDump" in self.modules:
+                self.logger.info("Starting Anti Dump Thread")
+                Thread(
+                    name=self.AntiDump.name, target=self.AntiDump.StartChecks
+                ).start()
+                self.logger.info("Started Anti Dump Thread")
         else:
             if "Miscellaneous" in self.modules:
                 Thread(name=self.Miscellaneous.name,
@@ -222,6 +243,10 @@ class PythonProtector:
             if "AntiAnalysis" in self.modules:
                 Thread(name=self.AntiAnalysis.name,
                        target=self.AntiAnalysis.StartAnalyzing).start()
+            if "AntiDump" in self.modules:
+                Thread(
+                    name=self.AntiDump.name, target=self.AntiDump.StartChecks
+                ).start()
 
     def start(self) -> None:
         """Main Function Of PythonProtector

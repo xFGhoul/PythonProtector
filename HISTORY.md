@@ -45,3 +45,14 @@ Minor bump for `setup.py` bug that didn't allow importing.
 ### Minor Changes
 
 - **Miscellaneous Changes/Refactoring** - For A Better User Experience
+
+## 1.8 0 2023-02-11
+
+### Major Changes
+
+- **Anti Dump** - New Anti Dump Module
+
+### Minor Changes
+
+- **Miscellaneous Changes/Refactoring** - For A Better User Experience
+- **Bug Fixes** - Many Bug Fixes For Edge Cases

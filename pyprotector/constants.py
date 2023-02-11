@@ -16,13 +16,11 @@ import subprocess
 import uuid
 
 
-from typing import Final, List, Set, final
+from typing import Final, List, Set, Any, final
 from cryptography.fernet import Fernet
 from base64 import b64encode
 
 from .utils.http import getIPAddress
-
-computer = wmi.WMI()
 
 
 @final
@@ -36,8 +34,9 @@ class UserInfo:
         .split("\n")[1]
         .strip()
     )
+    COMPUTER: Any = wmi.WMI()
     MAC: Final[str] = ":".join(re.findall("..", "%012x" % uuid.getnode()))
-    GPU: Final[str] = computer.Win32_VideoController()[0].Name
+    GPU: Final[str] = COMPUTER.Win32_VideoController()[0].Name
 
 
 @final
@@ -54,7 +53,7 @@ class LoggingInfo:
 
 @final
 class ProtectorInfo:
-    VERSION: Final[str] = "1.7"
+    VERSION: Final[str] = "1.8"
     ROOT_PATH: str = os.path.abspath(os.curdir)
 
 
@@ -318,5 +317,6 @@ class Valid:
         "AntiDLL",
         "AntiVM",
         "AntiAnalysis",
+        "AntiDump",
     }
     Detections: Final[Set[str]] = {"Screenshot", "Exit", "Report"}

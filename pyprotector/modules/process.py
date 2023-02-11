@@ -38,8 +38,12 @@ class AntiProcess(Module):
         self.event: Event = event
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Anti Process"
+    
+    @property
+    def version(self) -> int:
+        return 1.0
 
     def CheckProcessList(self) -> None:
         while True:
@@ -51,9 +55,9 @@ class AntiProcess(Module):
                         for process_name in Lists.BLACKLISTED_PROGRAMS
                     ):
                         try:
-                            self.logger.info(
-                                f"{process.name} Process Was Running")
                             if self.report:
+                                self.logger.info(
+                                    f"{process.name} Process Was Running")
                                 self.webhook.send(
                                     f"`{process.name()}` was detected running on the system.", self.name, )
                                 self.event.dispatch(
@@ -62,7 +66,12 @@ class AntiProcess(Module):
                                     self.name,
                                     process=process,
                                 )
-                                self.event.dispatch("pyprotector_detect", f"{process.name()} was detected running on the system.", self.name, process=process)
+                                self.event.dispatch(
+                                    "pyprotector_detect",
+                                    f"{process.name()} was detected running on the system.",
+                                    self.name,
+                                    process=process,
+                                )
                             process.kill()
                             if self.exit:
                                 os._exit(1)

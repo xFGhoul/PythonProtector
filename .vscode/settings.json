@@ -2,6 +2,7 @@
     "python.formatting.provider": "black",
     "cSpell.words": [
       "autohide",
+      "cheatengine",
       "codecracker",
       "compat",
       "COMPUTERNAME",
@@ -28,6 +29,7 @@
       "HWID",
       "HWIDS",
       "ilspy",
+      "IMAGENAME",
       "inlinehilite",
       "joeboxcontrol",
       "joeboxserver",
@@ -60,6 +62,7 @@
       "pyinject",
       "pymdownx",
       "pywin",
+      "rawshark",
       "regedit",
       "rpyc",
       "sbiedll",
