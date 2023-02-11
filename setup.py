@@ -58,7 +58,7 @@ setup(
         "Intended Audience :: Developers",
         "Operating System :: Microsoft :: Windows :: Windows 10",
         "Operating System :: Microsoft :: Windows :: Windows 11",
-        "Natural Language :: English"
+        "Natural Language :: English",
         "Topic :: Internet",
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
