@@ -39,7 +39,7 @@ class AntiAnalysis(Module):
     @property
     def name(self) -> str:
         return "Anti Analysis"
-    
+
     @property
     def version(self) -> int:
         return 1.0

@@ -75,6 +75,8 @@ nav:
       - Miscellaneous: 
         - Method Reference: configuration/Modules/Miscellaneous/index.md
         - Event Reference: configuration/Modules/Miscellaneous/events.md
+    - Ext:
+      - Keyauth: configuration/Ext/Keyauth/index.md
     - Intro To Events: configuration/Events/index.md
   - Frequently Asked Questions: faq.md
   - License: license.md

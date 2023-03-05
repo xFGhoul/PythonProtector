@@ -40,7 +40,7 @@ class AntiProcess(Module):
     @property
     def name(self) -> str:
         return "Anti Process"
-    
+
     @property
     def version(self) -> int:
         return 1.0

@@ -134,7 +134,6 @@ class Lists:
         "extremedumper",
         "zed",
         "exeinfope",
-        "dnspy",
         "titanHide",
         "ilspy",
         "titanhide",

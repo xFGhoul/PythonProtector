@@ -105,9 +105,9 @@ class PythonProtector:
             self.logger.configure(**LOGGING_CONFIG)
 
         # -- Initialize Constants
-        self.screenshot: bool = True if "Screenshot" in self.detections else False
-        self.exit: bool = True if "Exit" in self.detections else False
-        self.report: bool = True if "Report" in self.detections else False
+        self.screenshot: bool = bool("Screenshot" in self.detections)
+        self.exit: bool = bool("Exit" in self.detections)
+        self.report: bool = bool("Report" in self.detections)
 
         # -- Initialize Events
         self.event: ProtectorObservable = ProtectorObservable()
@@ -184,7 +184,6 @@ class PythonProtector:
             Any: Computer Object
         """
         return UserInfo.COMPUTER
-    
 
     def _run_module_threads(self, debug: bool) -> None:
         if debug:

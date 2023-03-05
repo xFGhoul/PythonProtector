@@ -39,7 +39,7 @@ class AntiDLL(Module):
     @property
     def name(self) -> str:
         return "Anti DLL"
-    
+
     @property
     def version(self) -> int:
         return 1.0

@@ -64,7 +64,7 @@ class AntiVM(Module):
     @property
     def name(self) -> str:
         return "Anti VM"
-    
+
     @property
     def version(self) -> int:
         return 1.0
@@ -202,9 +202,8 @@ class AntiVM(Module):
                 os._exit(1)
 
     def CheckVirtualEnv(self) -> None:
-        if self._get_base_prefix_compat() != sys.prefix:
-            if self.exit:
-                os._exit(1)
+        if self._get_base_prefix_compat() != sys.prefix and self.exit:
+            os._exit(1)
 
     def CheckRegistry(self) -> None:
         reg1: int = os.system(

@@ -14,7 +14,8 @@ import httpx
 
 def getIPAddress() -> str:
     try:
-        response = httpx.get("https://ipinfo.io/json").json()
+        response = httpx.get("https://ipinfo.io/json")
+        response.raise_for_status()
     except (
         httpx.TimeoutException,
         httpx.RequestError,
@@ -23,16 +24,14 @@ def getIPAddress() -> str:
     ):
         return "No IP Address"
 
+    response = response.json()
     ip = response.get("ip")
     return ip
 
 
 def hasInternet() -> bool:
     try:
-        if httpx.get("https://google.com"):
-            return True
-        else:
-            return False
+        return httpx.get("https://google.com")
     except (
         httpx.TimeoutException,
         httpx.RequestError,

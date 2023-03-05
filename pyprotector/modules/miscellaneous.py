@@ -47,11 +47,10 @@ class Miscellaneous(Module):
     @property
     def name(self) -> str:
         return self.__class__.__name__
-    
+
     @property
     def version(self) -> int:
         return 1.0
-    
 
     def CheckInternet(self) -> None:
         while True:
@@ -62,7 +61,7 @@ class Miscellaneous(Module):
                 if self.exit:
                     os._exit(1)
             else:
-                    pass
+                pass
 
     def CheckRAM(self) -> None:
         memory: int = psutil.virtual_memory().total
@@ -223,6 +222,7 @@ class Miscellaneous(Module):
                         self.event.dispatch(
                             "blacklisted_import",
                             f"{package} Was Found Installed",
+                            self.name,
                             package=package,
                             dist=dist,
                         )

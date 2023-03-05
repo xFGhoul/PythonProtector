@@ -40,7 +40,7 @@ class AntiDump(Module):
     @property
     def name(self) -> str:
         return "Anti Dump"
-    
+
     @property
     def version(self) -> int:
         return 1.0

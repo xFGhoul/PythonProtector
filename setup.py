@@ -19,7 +19,12 @@ with open("HISTORY.md") as history_file:
 
 setup(
     name="PythonProtector",
-    packages=["pyprotector", "pyprotector.utils", "pyprotector.modules"],
+    packages=[
+        "pyprotector",
+        "pyprotector.utils",
+        "pyprotector.modules",
+        "pyprotector.keyauth",
+    ],
     version="1.8",
     license="MIT",
     description="Library for protecting your python files",
@@ -52,7 +57,10 @@ setup(
         "WMI",
         "pywin32",
         "Pillow",
+        "observable",
+        "cryptography"
     ],
+    extras_require={"Keyauth": ["pycryptodome"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
