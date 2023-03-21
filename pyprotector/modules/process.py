@@ -25,12 +25,8 @@ from ..utils.webhook import Webhook
 
 class AntiProcess(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -46,6 +42,9 @@ class AntiProcess(Module):
         return 1.0
 
     def CheckProcessList(self) -> None:
+        """
+        Checks the Process List for any Blacklisted Programs
+        """
         while True:
             try:
                 time.sleep(0.7)
@@ -56,10 +55,11 @@ class AntiProcess(Module):
                     ):
                         try:
                             if self.report:
-                                self.logger.info(
-                                    f"{process.name} Process Was Running")
+                                self.logger.info(f"{process.name} Process Was Running")
                                 self.webhook.send(
-                                    f"`{process.name()}` was detected running on the system.", self.name, )
+                                    f"`{process.name()}` was detected running on the system.",
+                                    self.name,
+                                )
                                 self.event.dispatch(
                                     "process_running",
                                     f"{process.name()} was detected running on the system.",
@@ -81,9 +81,10 @@ class AntiProcess(Module):
                 pass
 
     def CheckWindowNames(self) -> None:
+        """Checks Window Names Against Blacklisted List"""
+
         def winEnumHandler(hwnd, ctx) -> None:
-            if win32gui.GetWindowText(hwnd).lower(
-            ) in Lists.BLACKLISTED_WINDOW_NAMES:
+            if win32gui.GetWindowText(hwnd).lower() in Lists.BLACKLISTED_WINDOW_NAMES:
                 pid: tuple[int, int] = GetWindowThreadProcessId(hwnd)
                 if isinstance(pid, int):
                     try:

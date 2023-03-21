@@ -21,12 +21,8 @@ from ..utils.webhook import Webhook
 
 class AntiAnalysis(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -45,6 +41,7 @@ class AntiAnalysis(Module):
         return 1.0
 
     def CheckDebugPrivilege(self) -> None:
+        """Check Debug Privilege"""
         hToken = ctypes.c_void_p()
         if (
             self.ntdll.NtOpenProcessToken(
@@ -69,9 +66,9 @@ class AntiAnalysis(Module):
             self.ntdll.NtClose(hToken)
             return
 
-        debug_privilege = (ctypes.c_int *
-                           (return_length.value //
-                            8)).from_buffer(privileges)
+        debug_privilege = (ctypes.c_int * (return_length.value // 8)).from_buffer(
+            privileges
+        )
         for priv in debug_privilege:
             if priv.s_luid.LowPart == 21 and priv.s_attributes & 0x00000002:
                 self.ntdll.NtClose(hToken)
@@ -79,19 +76,18 @@ class AntiAnalysis(Module):
                 if self.report:
                     self.webhook.send("Debug Privilege Enabled", self.name)
                     self.event.dispatch(
-                        "debug_privilege_found",
-                        "Debug Privilege Enabled",
-                        self.name)
+                        "debug_privilege_found", "Debug Privilege Enabled", self.name
+                    )
                     self.event.dispatch(
-                        "pyprotector_detect",
-                        "Debug Privilege Enabled",
-                        self.name)
+                        "pyprotector_detect", "Debug Privilege Enabled", self.name
+                    )
                 if self.exit:
                     os._exit(1)
 
         self.ntdll.NtClose(hToken)
 
     def HideThreads(self) -> None:
+        """Hide Current Threads"""
         PID = self.kernel32.GetCurrentProcessId()
         hProcess = self.kernel32.OpenProcess(0x1F0FFF, False, PID)
         if hProcess is None:
@@ -104,14 +100,14 @@ class AntiAnalysis(Module):
             return
 
         self.ntdll.NtSetInformationThread(
-            hThread, 0x11, ctypes.byref(
-                (ctypes.c_int(1)), ctypes.sizeof(
-                    ctypes.c_int)))
+            hThread, 0x11, ctypes.byref((ctypes.c_int(1)), ctypes.sizeof(ctypes.c_int))
+        )
 
         self.kernel32.CloseHandle(hThread)
         self.kernel32.CloseHandle(hProcess)
 
     def CheckDebugObject(self) -> None:
+        """Check If Debug Object Handle Found"""
         PID = self.kernel32.GetCurrentProcessId()
 
         hProcess = self.kernel32.OpenProcess(0x1F0FFF, False, PID)
@@ -147,6 +143,7 @@ class AntiAnalysis(Module):
                 os._exit((1))
 
     def CheckSEDebugName(self) -> None:
+        """Check SE Debug Name"""
         PID = self.kernel32.GetCurrentProcessId()
 
         hProcess = self.kernel32.OpenProcess(0x1F0FFF, False, PID)
@@ -172,13 +169,13 @@ class AntiAnalysis(Module):
                     "se_debug_name", "Debug Object Handle Detected", self.name
                 )
                 self.event.dispatch(
-                    "pyprotector_detect",
-                    "Debug Object Handle Detected",
-                    self.name)
+                    "pyprotector_detect", "Debug Object Handle Detected", self.name
+                )
             if self.exit:
                 os._exit((1))
 
     def CheckNtGlobalFlag(self) -> None:
+        """Check NT_GLOBAL_FLAG_DEBUGGED"""
         PEB = ctypes.c_int(0)
         self.ntdll.NtQueryInformationProcess.argtypes = [
             ctypes.c_void_p,
@@ -200,7 +197,9 @@ class AntiAnalysis(Module):
             )
             if self.report:
                 self.webhook.send(
-                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block", self.name, )
+                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block",
+                    self.name,
+                )
                 self.event.dispatch(
                     "nt_global_flag_debugged",
                     "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block",
@@ -215,14 +214,14 @@ class AntiAnalysis(Module):
                 os._exit(1)
 
     def CheckHardwareBreakpoints(self) -> None:
+        """Check For Exisiting Hardware Breakpoints"""
         ThreadContext = ctypes.c_void_p()
         TID = self.kernel32.GetCurrentThreadId()
         hThread = self.kernel32.OpenThread(0x1F03FF, False, TID)
         if hThread is None:
             return
 
-        if not self.kernel32.GetThreadContext(
-                hThread, ctypes.byref(ThreadContext)):
+        if not self.kernel32.GetThreadContext(hThread, ctypes.byref(ThreadContext)):
             self.kernel32.CloseHandle(hThread)
             return
 
@@ -252,6 +251,7 @@ class AntiAnalysis(Module):
         self.kernel32.CloseHandle(hThread)
 
     def CheckDebugFilterState(self) -> None:
+        """Check Debug Filter State Being !=0"""
         self.ntdll.DbgSetDebugFilterState(0, 0)
 
         DebugFilterState = ctypes.c_uint()
@@ -264,17 +264,17 @@ class AntiAnalysis(Module):
                     "Debug Filter State `!= 0`, debugging detected", self.name
                 )
                 self.event.dispatch(
-                    "debug_filter_state",
-                    "Debug Filter State is not 0",
-                    self.name)
+                    "debug_filter_state", "Debug Filter State is not 0", self.name
+                )
                 self.event.dispatch(
-                    "pyprotector_detect",
-                    "Debug Filter State is not 0",
-                    self.name)
+                    "pyprotector_detect", "Debug Filter State is not 0", self.name
+                )
             if self.exit:
                 os._exit(1)
 
     def CheckPEB(self) -> None:
+        """Check PEB For BeingDebugged"""
+
         class PEB(ctypes.Structure):
             _fields_ = [("BeingDebugged", ctypes.c_byte)]
 
@@ -290,13 +290,11 @@ class AntiAnalysis(Module):
             if self.report:
                 self.webhook.send("Process Found Being Debugged", self.name)
                 self.event.dispatch(
-                    "peb_being_debugged",
-                    "Process Found Being Debugged",
-                    self.name)
+                    "peb_being_debugged", "Process Found Being Debugged", self.name
+                )
                 self.event.dispatch(
-                    "pyprotector_detect",
-                    "Process Found Being Debugged",
-                    self.name)
+                    "pyprotector_detect", "Process Found Being Debugged", self.name
+                )
             if self.exit:
                 os._exit(1)
 

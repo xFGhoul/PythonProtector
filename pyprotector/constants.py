@@ -42,11 +42,10 @@ class UserInfo:
 @final
 class LoggingInfo:
     KEY: bytes = Fernet.generate_key()
-    CIPHER = Fernet(KEY)
+    CIPHER: Fernet = Fernet(KEY)
 
-    def encrypted_formatter(record):
-        encrypted = LoggingInfo.CIPHER.encrypt(
-            record["message"].encode("utf8"))
+    def encrypted_formatter(record) -> str:
+        encrypted: bytes = LoggingInfo.CIPHER.encrypt(record["message"].encode("utf8"))
         record["extra"]["encrypted"] = b64encode(encrypted).decode("latin1")
         return "[{time:YYYY-MM-DD HH:mm:ss}] {module}::{function}({line}) - {extra[encrypted]}\n{exception}"
 

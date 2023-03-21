@@ -32,12 +32,8 @@ from ..utils.webhook import Webhook
 
 class Miscellaneous(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -53,6 +49,9 @@ class Miscellaneous(Module):
         return 1.0
 
     def CheckInternet(self) -> None:
+        """
+        Checks If There Is A Valid Connection To The Internet
+        """
         while True:
             time.sleep(5)
             if hasInternet() is False:
@@ -64,6 +63,7 @@ class Miscellaneous(Module):
                 pass
 
     def CheckRAM(self) -> None:
+        """Checks RAM Size For Being Less Than 4 GB"""
         memory: int = psutil.virtual_memory().total
         if memory <= 4294967296:
             self.logger.info("RAM Check Failed")
@@ -88,6 +88,7 @@ class Miscellaneous(Module):
                 os._exit(1)
 
     def CheckIsDebuggerPresent(self) -> None:
+        """Checks IsDebuggerPresent and CheckRemoteDebuggerPresent"""
         isDebuggerPresent = ctypes.windll.kernel32.IsDebuggerPresent()
 
         if isDebuggerPresent:
@@ -95,13 +96,11 @@ class Miscellaneous(Module):
             if self.report:
                 self.webhook.send("IsDebuggerPresent Returned True", self.name)
                 self.event.dispatch(
-                    "is_debugger_present",
-                    "IsDebuggerPresent Returned True",
-                    self.name)
+                    "is_debugger_present", "IsDebuggerPresent Returned True", self.name
+                )
                 self.event.dispatch(
-                    "pyprotector_detect",
-                    "IsDebuggerPresent Returned True",
-                    self.name)
+                    "pyprotector_detect", "IsDebuggerPresent Returned True", self.name
+                )
             if self.exit:
                 os._exit(1)
 
@@ -131,6 +130,7 @@ class Miscellaneous(Module):
                 os._exit(1)
 
     def CheckDiskSize(self) -> None:
+        """Check Disk Size"""
         minDiskSizeGB: Literal[50] = 50
         if len(sys.argv) > 1:
             minDiskSizeGB = float(sys.argv[1])
@@ -159,12 +159,12 @@ class Miscellaneous(Module):
                 os._exit(1)
 
     def KillTasks(self) -> None:
+        """Kills Common RE Tasks"""
         os.system("taskkill /f /im HTTPDebuggerUI.exe >nul 2>&1")
         os.system("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1")
         os.system('taskkill /FI "IMAGENAME eq cheatengine*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq httpdebugger*" /IM * /F /T >nul 2>&1')
-        os.system(
-            'taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq fiddler*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq wireshark*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq rawshark*" /IM * /F /T >nul 2>&1')
@@ -172,8 +172,7 @@ class Miscellaneous(Module):
         os.system('taskkill /FI "IMAGENAME eq cheatengine*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq ida*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq httpdebugger*" /IM * /F /T >nul 2>&1')
-        os.system(
-            'taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
         os.system("sc stop HTTPDebuggerPro >nul 2>&1")
         os.system("sc stop KProcessHacker3 >nul 2>&1")
         os.system("sc stop KProcessHacker2 >nul 2>&1")
@@ -186,6 +185,7 @@ class Miscellaneous(Module):
         )
 
     def CheckPaths(self) -> None:
+        """Checks Paths on Computer Against Blacklisted Paths"""
         for path in Lists.BLACKLISTED_PATHS:
             if os.path.exists(path):
                 self.logger.info("Blacklisted Path Found")
@@ -209,6 +209,7 @@ class Miscellaneous(Module):
                 pass
 
     def CheckImports(self) -> None:
+        """Checks Current Installed PyPi Packages For Blacklisted Packages"""
         for package in Lists.BLACKLISTED_IMPORTS:
             try:
                 dist = pkg_resources.get_distribution(package)
@@ -240,25 +241,24 @@ class Miscellaneous(Module):
                 pass
 
     def CheckOutPutDebugString(self) -> None:
+        """Checks OutPutDebugString"""
         win32api.SetLastError(0)
         win32api.OutputDebugString("PythonProtector Intruding...")
         if win32api.GetLastError() != 0:
             self.logger.info("OutputDebugString Is Not 0")
             if self.report:
-                self.webhook.send(
-                    "OutputDebugString Not Equal To 0", self.name)
+                self.webhook.send("OutputDebugString Not Equal To 0", self.name)
                 self.event.dispatch(
-                    "output_debug_string",
-                    "OutputDebugString Not Equal To 0",
-                    self.name)
+                    "output_debug_string", "OutputDebugString Not Equal To 0", self.name
+                )
                 self.event.dispatch(
-                    "pyprotector_detect",
-                    "OutputDebugString Not Equal To 0",
-                    self.name)
+                    "pyprotector_detect", "OutputDebugString Not Equal To 0", self.name
+                )
             if self.exit:
                 os._exit(1)
 
     def CheckIPs(self) -> None:
+        """Checks User IP Against Blacklisted List"""
         if UserInfo.IP in Lists.BLACKLISTED_IPS:
             self.logger.info(f"{UserInfo.IP} Is A Blacklisted IP Address")
             if self.report:
@@ -283,6 +283,7 @@ class Miscellaneous(Module):
             pass
 
     def CheckCPUCores(self) -> None:
+        """Checks CPU Core Count For Being Less Than 1"""
         if int(psutil.cpu_count()) <= 1:
             self.logger.info("CPU Core Count Is Less Than Or Equal To 1")
             if self.report:
@@ -290,16 +291,17 @@ class Miscellaneous(Module):
                     "CPU Core Count Is Less Than Or Equal To `1`", self.name
                 )
                 self.event.dispatch(
-                    "cpu_count"
-                    "CPU Core Count Is Less Than Or Equal To 1",
-                    self.name)
+                    "cpu_count" "CPU Core Count Is Less Than Or Equal To 1", self.name
+                )
                 self.event.dispatch(
-                    "pyprotector_detect"
-                    "CPU Core Count Is Less Than Or Equal To 1", self.name, )
+                    "pyprotector_detect" "CPU Core Count Is Less Than Or Equal To 1",
+                    self.name,
+                )
             if self.exit:
                 os._exit(1)
 
     def IsUsingProxy(self) -> None:
+        """Checks If Proxies Are In Use"""
         headers: dict[str, str] = {"User-Agent": "Mozilla/5.0"}
         response = requests.get("https://www.google.com", headers=headers)
         for header in Lists.PROXY_HEADERS:
@@ -327,10 +329,8 @@ class Miscellaneous(Module):
             if self.report:
                 self.webhook.send("Proxy IP Being Used", self.name)
                 self.event.dispatch(
-                    "proxy_ip",
-                    "Proxy IP Being Used",
-                    self.name,
-                    ip=UserInfo.IP)
+                    "proxy_ip", "Proxy IP Being Used", self.name, ip=UserInfo.IP
+                )
                 self.event.dispatch(
                     "pyprotector_detect",
                     "Proxy IP Being Used",
@@ -344,15 +344,13 @@ class Miscellaneous(Module):
             _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             _socket.settimeout(5)
             _socket.connect(("check.torproject.org", 9050))
-            _socket.send(
-                b"GET / HTTP/1.1\r\nHost: check.torproject.org\r\n\r\n")
+            _socket.send(b"GET / HTTP/1.1\r\nHost: check.torproject.org\r\n\r\n")
             data: bytes = _socket.recv(1024)
             if "Congratulations" in data.decode():
                 self.logger.info("Tor Network Detected")
                 if self.report:
                     self.webhook.send("Tor Network In Use", self.name)
-                    self.event.dispatch(
-                        "tor_network", "Tor Network In Use", self.name)
+                    self.event.dispatch("tor_network", "Tor Network In Use", self.name)
                     self.event.dispatch(
                         "pyprotector_detect", "Tor Network In Use", self.name
                     )
@@ -366,16 +364,13 @@ class Miscellaneous(Module):
             if IP >> 24 in [0, 10, 100, 127, 169, 172, 192]:
                 self.logger.info("Transparent Proxies Detected")
                 if self.report:
-                    self.webhook.send(
-                        "Transparent Proxies Detected", self.name)
+                    self.webhook.send("Transparent Proxies Detected", self.name)
                     self.event.dispatch(
-                        "transparent_proxies",
-                        "Transparent Proxies Detected",
-                        self.name)
+                        "transparent_proxies", "Transparent Proxies Detected", self.name
+                    )
                     self.event.dispatch(
-                        "pyprotector_detect",
-                        "Transparent Proxies Detected",
-                        self.name)
+                        "pyprotector_detect", "Transparent Proxies Detected", self.name
+                    )
                 if self.exit:
                     os._exit(1)
         except Exception:

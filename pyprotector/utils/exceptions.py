@@ -10,16 +10,20 @@ Made With ❤️ By Ghoul & Marci
 """
 
 
-class ModulesNotValid(Exception):
+class ProtectorException(Exception):
+    """Base Class For All PythonProtector Exceptions"""
+
+
+class ModulesNotValid(ProtectorException):
     def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
-class DetectionsNotValid(Exception):
+class DetectionsNotValid(ProtectorException):
     def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
-class LogsPathEmpty(Exception):
+class LogsPathEmpty(ProtectorException):
     def __init__(self, message: str) -> None:
         super().__init__(message)

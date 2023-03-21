@@ -40,29 +40,36 @@ class KeyauthUser:
         self.username: str = data["username"]
         self.ip: str = data["ip"]
         self.hwid: str = data["hwid"]
-        self.expiry = datetime.utcfromtimestamp(
+        self.expiry: str = datetime.utcfromtimestamp(
             int(data["subscriptions"][0]["expiry"])
         ).strftime("%Y-%m-%d %H:%M:%S")
-        self.date_created = datetime.utcfromtimestamp(
-            int(data["createdate"])).strftime("%Y-%m-%d %H:%M:%S")
-        self.last_login = datetime.utcfromtimestamp(
-            int(data["lastlogin"])).strftime("%Y-%m-%d %H:%M:%S")
-        self.current_subscription = Subscription(**data["subscriptions"][0])
-        self.subscriptions = [
-            Subscription(
-                **subscription) for subscription in data["subscriptions"]]
+        self.date_created: str = datetime.utcfromtimestamp(
+            int(data["createdate"])
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        self.last_login: str = datetime.utcfromtimestamp(
+            int(data["lastlogin"])
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        self.current_subscription: Subscription = Subscription(
+            **data["subscriptions"][0]
+        )
+        self.subscriptions: list[Subscription] = [
+            Subscription(**subscription) for subscription in data["subscriptions"]
+        ]
 
     def __repr__(self) -> str:
         return self.username
-    
+
+
 @dataclass
 class KeyauthChat:
     author: str
     message: str
     timestamp: str
-    
+
     def __post_init__(self) -> None:
-        self.timestamp = datetime.utcfromtimestamp(int(self.timestamp)).strftime("%Y-%m-%d %H:%M:%S")
+        self.timestamp = datetime.utcfromtimestamp(int(self.timestamp)).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
 
 @dataclass

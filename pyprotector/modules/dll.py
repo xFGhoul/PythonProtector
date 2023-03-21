@@ -24,12 +24,8 @@ from ..utils.webhook import Webhook
 
 class AntiDLL(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -45,6 +41,7 @@ class AntiDLL(Module):
         return 1.0
 
     def BlockDLLs(self) -> None:
+        """Blocks Blacklisted DLL's From Being Loaded"""
         while True:
             try:
                 time.sleep(1)
@@ -55,11 +52,12 @@ class AntiDLL(Module):
                         hProcess: int = win32api.OpenProcess(0x0410, 0, pid)
                         try:
                             curProcessDLLs: tuple = win32process.EnumProcessModules(
-                                hProcess)
+                                hProcess
+                            )
                             for dll in curProcessDLLs:
                                 dllName: str = str(
-                                    win32process.GetModuleFileNameEx(
-                                        hProcess, dll)).lower()
+                                    win32process.GetModuleFileNameEx(hProcess, dll)
+                                ).lower()
                                 for sandboxDLL in Lists.BLACKLISTED_DLLS:
                                     if sandboxDLL in dllName:
                                         if dllName not in EvidenceOfSandbox:

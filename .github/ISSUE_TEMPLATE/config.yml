@@ -1,6 +1,6 @@
 contact_links:
   - name: 📚 Documentation
-    url: https://xfghoul.github.io/Mai/
+    url: http://ghouldev.me/PythonProtector/
     about: Before Making An Issue, Make Sure To Check The Documentation
 
   - name: 📚 Developer Documentation
@@ -8,5 +8,5 @@ contact_links:
     about: Make Sure To Check The Developer Documentation If This Issue Is Focused On Code
 
   - name: 🤔 Support Question
-    url: https://discord.gg/AZQpDFFtqK
+    url: https://discord.gg/yMu9qjdrmp
     about: Ask Questions At Our Discord If The Documentation Was Not Of Any Help

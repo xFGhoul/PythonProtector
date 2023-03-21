@@ -13,6 +13,12 @@ import httpx
 
 
 def getIPAddress() -> str:
+    """
+    Get IP Address of User
+
+    Returns:
+      The IP address of the machine that is running the code.
+    """
     try:
         response = httpx.get("https://ipinfo.io/json")
         response.raise_for_status()
@@ -30,6 +36,12 @@ def getIPAddress() -> str:
 
 
 def hasInternet() -> bool:
+    """
+    Checks if the user has internet
+
+    Returns:
+      A boolean value.
+    """
     try:
         return httpx.get("https://google.com")
     except (

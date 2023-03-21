@@ -58,7 +58,7 @@ setup(
         "pywin32",
         "Pillow",
         "observable",
-        "cryptography"
+        "cryptography",
     ],
     extras_require={"Keyauth": ["pycryptodome"]},
     classifiers=[

@@ -136,6 +136,7 @@ _testing.py
 _test_rpc.py
 _test_internals.py
 logs/
+ext/
 
 # Poetry
 poetry.lock

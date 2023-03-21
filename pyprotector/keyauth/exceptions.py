@@ -9,10 +9,12 @@
 Made With ❤️ By Ghoul & Marci
 """
 
+
 class KeyauthException(BaseException):
     """
     Base Class of All Keyauth Issues
     """
+
 
 class NewVersionAvailable(KeyauthException):
     def __init__(self, message: str) -> None:

@@ -10,4 +10,3 @@ Made With ❤️ By Ghoul & Marci
 """
 
 from .utils import *
-from .keyauth import Keyauth

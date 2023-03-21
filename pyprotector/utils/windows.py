@@ -13,6 +13,9 @@ import ctypes
 
 
 def BSOD() -> None:
+    """
+    Calls the NtRaiseHardError function to trigger a BSOD.
+    """
     nullptr = ctypes.POINTER(ctypes.c_int)()
 
     ctypes.windll.ntdll.RtlAdjustPrivilege(

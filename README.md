@@ -8,7 +8,7 @@ A modern, easy to use and feature-rich way to protect your Python Programs.
 
 ## Features
 
-- Completely Configurable Module System 
+- Completely Configurable Module System
 - Completely Configurable On Detection System
 - Encrypted Logging System With Remote Uploading
 - Discord Webhook Support
@@ -26,6 +26,7 @@ py -3 -m pip install -U PythonProtector
 ```
 
 You may also install the development version:
+
 ```sh
 pip install git+https://github.com/xFGhoul/PythonProtector.git
 ```
@@ -33,6 +34,7 @@ pip install git+https://github.com/xFGhoul/PythonProtector.git
 ## Usage
 
 Quick Example:
+
 ```py
 from pathlib import Path
 from threading import Thread

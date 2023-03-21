@@ -12,15 +12,12 @@ Made With ❤️ By Ghoul & Marci
 from pyprotector.keyauth import Keyauth
 from pyprotector.keyauth.utils import getchecksum
 
-auth = Keyauth(
-    name="",
-    ownerid="",
-    secret="",
-    version="",
-    file_hash=getchecksum())
+auth = Keyauth(name="", ownerid="", secret="", version="", file_hash=getchecksum())
 
 app = auth.initialize()
-print(app) # "Keyauth App ({self.version}) with {self.users} users, {self.keys} keys and {self.onlineUsers} online users"
+print(
+    app
+)  # "Keyauth App ({self.version}) with {self.users} users, {self.keys} keys and {self.onlineUsers} online users"
 
 license = auth.license("LICENSE")
 print(license.current_subscription)

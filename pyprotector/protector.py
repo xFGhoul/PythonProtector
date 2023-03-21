@@ -83,8 +83,7 @@ class PythonProtector:
             raise LogsPathEmpty("Debug Enabled But No Log Path Was Provided.")
 
         if self.logs_path and not self.debug:
-            raise RuntimeWarning(
-                "Logs Path Was Provided But Debug Was Disabled.")
+            raise RuntimeWarning("Logs Path Was Provided But Debug Was Disabled.")
 
         if self.debug and self.logs_path:
             LOGGING_CONFIG: Dict = {
@@ -116,8 +115,7 @@ class PythonProtector:
         self.webhook_url: str = webhook_url
 
         if self.report and self.webhook_url is None:
-            raise RuntimeWarning(
-                "Reporting Was Set But No Webhook URL Was Provided.")
+            raise RuntimeWarning("Reporting Was Set But No Webhook URL Was Provided.")
 
         self.webhook: Webhook = Webhook(
             self.webhook_url, self.logs_path, self.screenshot
@@ -186,35 +184,42 @@ class PythonProtector:
         return UserInfo.COMPUTER
 
     def _run_module_threads(self, debug: bool) -> None:
+        """
+        It starts threads for each module
+
+        Args:
+          debug (bool): Log If Debug Is Enabled
+        """
+
         if debug:
             if "Miscellaneous" in self.modules:
                 self.logger.info("Starting Miscellaneous Thread")
-                Thread(name=self.Miscellaneous.name,
-                       target=self.Miscellaneous.StartChecks).start()
+                Thread(
+                    name=self.Miscellaneous.name, target=self.Miscellaneous.StartChecks
+                ).start()
                 self.logger.info("Miscellaneous Thread Started")
             if "AntiProcess" in self.modules:
                 self.logger.info("Starting Anti Process Thread")
-                Thread(name="Anti Process List",
-                       target=self.AntiProcess.CheckProcessList).start()
-                Thread(name="Anti Window Names",
-                       target=self.AntiProcess.CheckWindowNames).start()
+                Thread(
+                    name="Anti Process List", target=self.AntiProcess.CheckProcessList
+                ).start()
+                Thread(
+                    name="Anti Window Names", target=self.AntiProcess.CheckWindowNames
+                ).start()
                 self.logger.info("Anti Process Thread Started")
             if "AntiDLL" in self.modules:
                 self.logger.info("Starting Anti DLL Thread")
-                Thread(
-                    name=self.AntiDLL.name,
-                    target=self.AntiDLL.BlockDLLs).start()
+                Thread(name=self.AntiDLL.name, target=self.AntiDLL.BlockDLLs).start()
                 self.logger.info("Anti DLL Thread Started")
             if "AntiVM" in self.modules:
                 self.logger.info("Starting Anti VM Thread")
-                Thread(
-                    name=self.AntiVM.name,
-                    target=self.AntiVM.StartChecks).start()
+                Thread(name=self.AntiVM.name, target=self.AntiVM.StartChecks).start()
                 self.logger.info("Anti VM Thread Started")
             if "AntiAnalysis" in self.modules:
                 self.logger.info("Starting Anti Analysis Thread")
-                Thread(name=self.AntiAnalysis.name,
-                       target=self.AntiAnalysis.StartAnalyzing).start()
+                Thread(
+                    name=self.AntiAnalysis.name, target=self.AntiAnalysis.StartAnalyzing
+                ).start()
                 self.logger.info("Anti Analysis Thread Started")
             if "AntiDump" in self.modules:
                 self.logger.info("Starting Anti Dump Thread")
@@ -224,24 +229,24 @@ class PythonProtector:
                 self.logger.info("Started Anti Dump Thread")
         else:
             if "Miscellaneous" in self.modules:
-                Thread(name=self.Miscellaneous.name,
-                       target=self.Miscellaneous.StartChecks).start()
+                Thread(
+                    name=self.Miscellaneous.name, target=self.Miscellaneous.StartChecks
+                ).start()
             if "AntiProcess" in self.modules:
-                Thread(name="Anti Process List",
-                       target=self.AntiProcess.CheckProcessList).start()
-                Thread(name="Anti Window Names",
-                       target=self.AntiProcess.CheckWindowNames).start()
+                Thread(
+                    name="Anti Process List", target=self.AntiProcess.CheckProcessList
+                ).start()
+                Thread(
+                    name="Anti Window Names", target=self.AntiProcess.CheckWindowNames
+                ).start()
             if "AntiDLL" in self.modules:
-                Thread(
-                    name=self.AntiDLL.name,
-                    target=self.AntiDLL.BlockDLLs).start()
+                Thread(name=self.AntiDLL.name, target=self.AntiDLL.BlockDLLs).start()
             if "AntiVM" in self.modules:
-                Thread(
-                    name=self.AntiVM.name,
-                    target=self.AntiVM.StartChecks).start()
+                Thread(name=self.AntiVM.name, target=self.AntiVM.StartChecks).start()
             if "AntiAnalysis" in self.modules:
-                Thread(name=self.AntiAnalysis.name,
-                       target=self.AntiAnalysis.StartAnalyzing).start()
+                Thread(
+                    name=self.AntiAnalysis.name, target=self.AntiAnalysis.StartAnalyzing
+                ).start()
             if "AntiDump" in self.modules:
                 Thread(
                     name=self.AntiDump.name, target=self.AntiDump.StartChecks
@@ -285,8 +290,7 @@ class PythonProtector:
 
             vmem = psutil.virtual_memory()
 
-            self.logger.info(
-                f"Total Memory: {humanize.naturalsize(vmem.total)}")
+            self.logger.info(f"Total Memory: {humanize.naturalsize(vmem.total)}")
             self.logger.info(
                 f"Memory Availability: {humanize.naturalsize(vmem.available)}"
             )
