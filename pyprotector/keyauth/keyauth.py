@@ -24,7 +24,7 @@ from .exceptions import NewVersionAvailable, ApplicationNotFound, RequestError
 
 class Keyauth:
     def __init__(
-        self, name: str, ownerid: str, secret: str, version: str, file_hash: str
+        self, name: str, ownerid: str, secret: str, version: str, file_hash: Optional[str] = ""
     ) -> None:
         self.name: str = name
         self.ownerid: str = ownerid
