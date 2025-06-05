@@ -13,12 +13,6 @@ check_remote_debugger_present()
 Called When CheckRemoteDebuggerPresent Returns True
 
 ```py
-output_debug_string()
-```
-
-Called When `OutputDebugString` != 0
-
-```py
 ram_check(ram: int)
 ```
 
@@ -52,12 +46,6 @@ blacklisted_path(path: str)
 Called When Blacklisted Path Found
 
 - `path` ([`str`](https://docs.python.org/3/library/stdtypes.html#str)) - Blacklisted Path
-
-```py
-blacklisted_import(package: str, dist: Distribution)
-```
-
-Called When Blacklisted Import Found
 
 ##### Parameters
 

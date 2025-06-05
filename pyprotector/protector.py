@@ -1,10 +1,10 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -24,7 +24,7 @@ from typing import Dict, Union, List, Tuple, Any, Optional
 from command_runner.elevate import is_admin
 from loguru import logger
 
-from .constants import ProtectorInfo, LoggingInfo, UserInfo, Valid
+from .constants import ProtectorInfo, UserInfo, Valid, encrypted_formatter
 from .modules.process import AntiProcess
 from .modules.vm import AntiVM
 from .modules.dll import AntiDLL
@@ -41,7 +41,7 @@ class PythonProtector:
         self,
         debug: Optional[bool],
         modules: List[str],
-        webhook_url: Optional[str],
+        webhook_url: str,
         on_detect: Optional[List[str]],
         logs_path: Optional[Union[Path, str]] = None,
     ) -> None:
@@ -67,7 +67,7 @@ class PythonProtector:
                 "List Of Modules Provided Does Not Match, Consider Checking Valid Modules."
             )
 
-        self.detections: List[str] = on_detect
+        self.detections: List[str] = on_detect or []
         _detections_valid: bool = Valid.Detections.issuperset(self.detections)
         if not _detections_valid:
             raise DetectionsNotValid(
@@ -83,15 +83,14 @@ class PythonProtector:
             raise LogsPathEmpty("Debug Enabled But No Log Path Was Provided.")
 
         if self.logs_path and not self.debug:
-            raise RuntimeWarning(
-                "Logs Path Was Provided But Debug Was Disabled.")
+            raise RuntimeWarning("Logs Path Was Provided But Debug Was Disabled.")
 
         if self.debug and self.logs_path:
             LOGGING_CONFIG: Dict = {
                 "handlers": [
                     {
-                        "sink": self.logs_path,
-                        "format": LoggingInfo.encrypted_formatter,
+                        "sink": str(self.logs_path),
+                        "format": encrypted_formatter,
                         "enqueue": True,
                         "rotation": "daily",
                         "mode": "w",
@@ -116,11 +115,10 @@ class PythonProtector:
         self.webhook_url: str = webhook_url
 
         if self.report and self.webhook_url is None:
-            raise RuntimeWarning(
-                "Reporting Was Set But No Webhook URL Was Provided.")
+            raise RuntimeWarning("Reporting Was Set But No Webhook URL Was Provided.")
 
         self.webhook: Webhook = Webhook(
-            self.webhook_url, self.logs_path, self.screenshot
+            self.webhook_url, str(self.logs_path), self.screenshot
         )
 
         # -- Initialize Modules
@@ -196,32 +194,32 @@ class PythonProtector:
         if debug:
             if "Miscellaneous" in self.modules:
                 self.logger.info("Starting Miscellaneous Thread")
-                Thread(name=self.Miscellaneous.name,
-                       target=self.Miscellaneous.StartChecks).start()
+                Thread(
+                    name=self.Miscellaneous.name, target=self.Miscellaneous.StartChecks
+                ).start()
                 self.logger.info("Miscellaneous Thread Started")
             if "AntiProcess" in self.modules:
                 self.logger.info("Starting Anti Process Thread")
-                Thread(name="Anti Process List",
-                       target=self.AntiProcess.CheckProcessList).start()
-                Thread(name="Anti Window Names",
-                       target=self.AntiProcess.CheckWindowNames).start()
+                Thread(
+                    name="Anti Process List", target=self.AntiProcess.CheckProcessList
+                ).start()
+                Thread(
+                    name="Anti Window Names", target=self.AntiProcess.CheckWindowNames
+                ).start()
                 self.logger.info("Anti Process Thread Started")
             if "AntiDLL" in self.modules:
                 self.logger.info("Starting Anti DLL Thread")
-                Thread(
-                    name=self.AntiDLL.name,
-                    target=self.AntiDLL.BlockDLLs).start()
+                Thread(name=self.AntiDLL.name, target=self.AntiDLL.BlockDLLs).start()
                 self.logger.info("Anti DLL Thread Started")
             if "AntiVM" in self.modules:
                 self.logger.info("Starting Anti VM Thread")
-                Thread(
-                    name=self.AntiVM.name,
-                    target=self.AntiVM.StartChecks).start()
+                Thread(name=self.AntiVM.name, target=self.AntiVM.StartChecks).start()
                 self.logger.info("Anti VM Thread Started")
             if "AntiAnalysis" in self.modules:
                 self.logger.info("Starting Anti Analysis Thread")
-                Thread(name=self.AntiAnalysis.name,
-                       target=self.AntiAnalysis.StartAnalyzing).start()
+                Thread(
+                    name=self.AntiAnalysis.name, target=self.AntiAnalysis.StartAnalyzing
+                ).start()
                 self.logger.info("Anti Analysis Thread Started")
             if "AntiDump" in self.modules:
                 self.logger.info("Starting Anti Dump Thread")
@@ -231,41 +229,39 @@ class PythonProtector:
                 self.logger.info("Started Anti Dump Thread")
         else:
             if "Miscellaneous" in self.modules:
-                Thread(name=self.Miscellaneous.name,
-                       target=self.Miscellaneous.StartChecks).start()
+                Thread(
+                    name=self.Miscellaneous.name, target=self.Miscellaneous.StartChecks
+                ).start()
             if "AntiProcess" in self.modules:
-                Thread(name="Anti Process List",
-                       target=self.AntiProcess.CheckProcessList).start()
-                Thread(name="Anti Window Names",
-                       target=self.AntiProcess.CheckWindowNames).start()
+                Thread(
+                    name="Anti Process List", target=self.AntiProcess.CheckProcessList
+                ).start()
+                Thread(
+                    name="Anti Window Names", target=self.AntiProcess.CheckWindowNames
+                ).start()
             if "AntiDLL" in self.modules:
-                Thread(
-                    name=self.AntiDLL.name,
-                    target=self.AntiDLL.BlockDLLs).start()
+                Thread(name=self.AntiDLL.name, target=self.AntiDLL.BlockDLLs).start()
             if "AntiVM" in self.modules:
-                Thread(
-                    name=self.AntiVM.name,
-                    target=self.AntiVM.StartChecks).start()
+                Thread(name=self.AntiVM.name, target=self.AntiVM.StartChecks).start()
             if "AntiAnalysis" in self.modules:
-                Thread(name=self.AntiAnalysis.name,
-                       target=self.AntiAnalysis.StartAnalyzing).start()
+                Thread(
+                    name=self.AntiAnalysis.name, target=self.AntiAnalysis.StartAnalyzing
+                ).start()
             if "AntiDump" in self.modules:
                 Thread(
                     name=self.AntiDump.name, target=self.AntiDump.StartChecks
                 ).start()
 
-    def _run_debug_module_threads(self):
+    def _run_no_debug_module_threads(self):
         self.logger.info("PythonProtector Starting")
 
         self.logger.info(f"Version: {ProtectorInfo.VERSION}")
         self.logger.info(f"Current Path: {ProtectorInfo.ROOT_PATH}")
         self.logger.info(
-            f"Operating System: {
-                platform.uname().system} {
-                platform.uname().release} {
-                platform.win32_edition()} ({
-                    platform.architecture(
-                        sys.executable)[0]})")
+            f"Operating System: {platform.uname().system} {platform.uname().release} {
+                platform.win32_edition()
+            } ({platform.architecture(sys.executable)[0]})"
+        )
         bt = datetime.datetime.fromtimestamp(psutil.boot_time())
         self.logger.info(
             f"Boot Time: {bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}"
@@ -283,10 +279,7 @@ class PythonProtector:
         vmem = psutil.virtual_memory()
 
         self.logger.info(f"Total Memory: {humanize.naturalsize(vmem.total)}")
-        self.logger.info(
-            f"Memory Availability: {
-                humanize.naturalsize(
-                    vmem.available)}")
+        self.logger.info(f"Memory Availability: {humanize.naturalsize(vmem.available)}")
         self.logger.info(f"Memory Percentage: {vmem.percent}%")
 
         self.logger.info("Starting PythonProtector Services")
@@ -297,17 +290,17 @@ class PythonProtector:
         """Main Function Of PythonProtector
 
         Raises:
-                DeprecationWarning: If Python Version < 3.12
+                DeprecationWarning: If Python Version < 3.13
         """
         # -- Check If Windows Platform
         if sys.platform != "win32":
             os._exit(1)
 
-        if platform.python_version_tuple()[1] < "12":
-            raise DeprecationWarning("Python Is Not 3.12+")
+        if platform.python_version_tuple()[1] < "13":
+            raise DeprecationWarning("Python Is Not 3.13+")
 
         # -- Start Main Program
         if self.debug:
-            self._run_debug_module_threads()
+            self._run_module_threads(debug=True)
         else:
-            self._run_module_threads(debug=False)
+            self._run_no_debug_module_threads()

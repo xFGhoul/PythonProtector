@@ -1,10 +1,10 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -42,7 +42,9 @@ def hasInternet() -> bool:
       A boolean value.
     """
     try:
-        return httpx.get("https://google.com")
+        response = httpx.get("https://www.google.com", timeout=5)
+        response.raise_for_status()
+        return True
     except (
         httpx.TimeoutException,
         httpx.RequestError,

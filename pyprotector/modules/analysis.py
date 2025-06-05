@@ -1,10 +1,10 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -21,12 +21,8 @@ from ..utils.webhook import Webhook
 
 class AntiAnalysis(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -41,7 +37,7 @@ class AntiAnalysis(Module):
         return "Anti Analysis"
 
     @property
-    def version(self) -> int:
+    def version(self) -> float:
         return 1.0
 
     def CheckDebugPrivilege(self) -> None:
@@ -70,9 +66,9 @@ class AntiAnalysis(Module):
             self.ntdll.NtClose(hToken)
             return
 
-        debug_privilege = (ctypes.c_int *
-                           (return_length.value //
-                            8)).from_buffer(privileges)
+        debug_privilege = (ctypes.c_int * (return_length.value // 8)).from_buffer(
+            privileges
+        )
         for priv in debug_privilege:
             if priv.s_luid.LowPart == 21 and priv.s_attributes & 0x00000002:
                 self.ntdll.NtClose(hToken)
@@ -84,6 +80,7 @@ class AntiAnalysis(Module):
                         self.name,
                     )
                 if self.exit:
+                    self.logger.info("Debug Privilege Enabled, Exiting")
                     os._exit(1)
 
         self.ntdll.NtClose(hToken)
@@ -102,9 +99,8 @@ class AntiAnalysis(Module):
             return
 
         self.ntdll.NtSetInformationThread(
-            hThread, 0x11, ctypes.byref(
-                (ctypes.c_int(1)), ctypes.sizeof(
-                    ctypes.c_int)))
+            hThread, 0x11, ctypes.byref((ctypes.c_int(1)), ctypes.sizeof(ctypes.c_int))
+        )
 
         self.kernel32.CloseHandle(hThread)
         self.kernel32.CloseHandle(hProcess)
@@ -137,6 +133,7 @@ class AntiAnalysis(Module):
                     self.name,
                 )
             if self.exit:
+                self.logger.info("Debug Object Handle Detected, Exiting")
                 os._exit((1))
 
     def CheckSEDebugName(self) -> None:
@@ -168,6 +165,7 @@ class AntiAnalysis(Module):
                     self.name,
                 )
             if self.exit:
+                self.logger.info("Debug Object Handle Detected, Exiting")
                 os._exit((1))
 
     def CheckNtGlobalFlag(self) -> None:
@@ -193,47 +191,65 @@ class AntiAnalysis(Module):
             )
             if self.report:
                 self.webhook.send(
-                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block", self.name, )
+                    "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block",
+                    self.name,
+                )
                 self.event.dispatch(
                     ["nt_global_flag_debugged", "pyprotector_detect"],
                     "NT_GLOBAL_FLAG_DEBUGGED Found in the Process Environment Block",
                     self.name,
                 )
             if self.exit:
+                self.logger.info("NT_GLOBAL_FLAG_DEBUGGED Found, Exiting")
                 os._exit(1)
 
     def CheckHardwareBreakpoints(self) -> None:
-        """Check For Exisiting Hardware Breakpoints"""
-        ThreadContext = ctypes.c_void_p()
-        TID = self.kernel32.GetCurrentThreadId()
-        hThread = self.kernel32.OpenThread(0x1F03FF, False, TID)
-        if hThread is None:
-            return
+        """Check For Existing Hardware Breakpoints"""
+        try:
 
-        if not self.kernel32.GetThreadContext(
-                hThread, ctypes.byref(ThreadContext)):
+            class CONTEXT(ctypes.Structure):
+                _fields_ = [
+                    ("ContextFlags", ctypes.c_ulong),
+                    ("Dr0", ctypes.c_ulong),
+                    ("Dr1", ctypes.c_ulong),
+                    ("Dr2", ctypes.c_ulong),
+                    ("Dr3", ctypes.c_ulong),
+                    ("Dr6", ctypes.c_ulong),
+                    ("Dr7", ctypes.c_ulong),
+                ]
+
+            TID = self.kernel32.GetCurrentThreadId()
+            hThread = self.kernel32.OpenThread(0x1F03FF, False, TID)
+            if hThread is None or hThread == 0:
+                return
+
+            context = CONTEXT()
+            context.ContextFlags = 0x00000010
+
+            if self.kernel32.GetThreadContext(hThread, ctypes.byref(context)):
+                if (
+                    context.Dr0 != 0
+                    or context.Dr1 != 0
+                    or context.Dr2 != 0
+                    or context.Dr3 != 0
+                ):
+                    self.kernel32.CloseHandle(hThread)
+                    self.logger.info("Hardware Breakpoints Found Set")
+                    if self.report:
+                        self.webhook.send("Hardware Breakpoints Found Set", self.name)
+                        self.event.dispatch(
+                            ["hardware_breakpoint_set", "pyprotector_detect"],
+                            "Hardware Breakpoints Found Set",
+                            self.name,
+                        )
+                    if self.exit:
+                        self.logger.info("Hardware Breakpoints Found, Exiting")
+                        os._exit(1)
+
             self.kernel32.CloseHandle(hThread)
-            return
 
-        if (
-            ThreadContext.contents.Dr0 != 0
-            or ThreadContext.contents.Dr1 != 0
-            or ThreadContext.contents.Dr2 != 0
-            or ThreadContext.contents.Dr3 != 0
-        ):
-            self.kernel32.CloseHandle(hThread)
-            self.logger.info("Hardware Breakpoints Found Set")
-            if self.report:
-                self.webhook.send("Hardware Breakpoints Found Set", self.name)
-                self.event.dispatch(
-                    ["hardware_breakpoint_set", "pyprotector_detect"],
-                    "Hardware Breakpoints Found Set",
-                    self.name,
-                )
-            if self.exit:
-                os._exit(1)
-
-        self.kernel32.CloseHandle(hThread)
+        except Exception as e:
+            self.logger.error(f"Error checking hardware breakpoints: {e}")
 
     def CheckDebugFilterState(self) -> None:
         """Check Debug Filter State Being !=0"""
@@ -254,6 +270,7 @@ class AntiAnalysis(Module):
                     self.name,
                 )
             if self.exit:
+                self.logger.info("Debug Filter State Detected, Exiting")
                 os._exit(1)
 
     def CheckPEB(self) -> None:
@@ -279,6 +296,7 @@ class AntiAnalysis(Module):
                     self.name,
                 )
             if self.exit:
+                self.logger.info("Process Being Debugged, Exiting")
                 os._exit(1)
 
     def StartAnalyzing(self) -> None:

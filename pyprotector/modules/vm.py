@@ -1,21 +1,19 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
 
 import ctypes
 import os
-import sys
 
 import httpx
 
-from functools import lru_cache
 from typing import List
 
 from ..types import Event, Logger
@@ -26,67 +24,80 @@ from ..utils.webhook import Webhook
 
 class AntiVM(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
         self.report: bool = report
         self.event: Event = event
 
-        self.VMWARE_MACS: List[str] = [
-            "00:05:69", "00:0c:29", "00:1c:14", "00:50:56"]
+        self.VMWARE_MACS: List[str] = ["00:05:69", "00:0c:29", "00:1c:14", "00:50:56"]
 
-        self.HWIDS: List[str] = httpx.get(
-            "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/hwid_list.txt"
-        ).text
-        self.PC_NAMES: List[str] = httpx.get(
-            "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/pc_name_list.txt"
-        ).text
-        self.PC_USERNAMES: List[str] = httpx.get(
-            "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/pc_username_list.txt"
-        ).text
-        self.IPS: List[str] = httpx.get(
-            "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/ip_list.txt"
-        ).text
-        self.MACS: List[str] = httpx.get(
-            "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/mac_list.txt"
-        ).text
-        self.GPUS: List[str] = httpx.get(
-            "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/gpu_list.txt"
-        ).text
-        self.PLATFORMS: List[str] = httpx.get(
-            "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/pc_platforms.txt"
-        ).text
+        self.HWIDS: List[str] = (
+            httpx.get(
+                "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/hwid_list.txt"
+            )
+            .text.strip()
+            .split("\n")
+        )
+        self.PC_NAMES: List[str] = (
+            httpx.get(
+                "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/pc_name_list.txt"
+            )
+            .text.strip()
+            .split("\n")
+        )
+        self.PC_USERNAMES: List[str] = (
+            httpx.get(
+                "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/pc_username_list.txt"
+            )
+            .text.strip()
+            .split("\n")
+        )
+        self.IPS: List[str] = (
+            httpx.get(
+                "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/ip_list.txt"
+            )
+            .text.strip()
+            .split("\n")
+        )
+        self.MACS: List[str] = (
+            httpx.get(
+                "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/mac_list.txt"
+            )
+            .text.strip()
+            .split("\n")
+        )
+        self.GPUS: List[str] = (
+            httpx.get(
+                "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/gpu_list.txt"
+            )
+            .text.strip()
+            .split("\n")
+        )
+        self.PLATFORMS: List[str] = (
+            httpx.get(
+                "https://raw.githubusercontent.com/xFGhoul/PythonProtector/dev/data/pc_platforms.txt"
+            )
+            .text.strip()
+            .split("\n")
+        )
 
     @property
     def name(self) -> str:
         return "Anti VM"
 
     @property
-    def version(self) -> int:
+    def version(self) -> float:
         return 1.0
 
-    def _get_base_prefix_compat(self) -> None:
-        return (
-            getattr(sys, "base_prefix", None)
-            or getattr(sys, "real_prefix", None)
-            or sys.prefix
-        )
-
-    @lru_cache
     def CheckLists(self) -> None:
         """
         Checks if the user's HWID, PC username, PC name, IP, MAC address, or GPU is in the blacklists.
         """
         if UserInfo.HWID in self.HWIDS:
-            self.logger.info(
-                f"Blacklisted HWID Detected. HWID: {
-                    UserInfo.HWID}")
+            self.logger.info(f"Blacklisted HWID Detected. HWID: {UserInfo.HWID}")
             if self.report:
                 self.webhook.send(
                     f"Blacklisted HWID Detected: `{UserInfo.HWID}`", self.name
@@ -98,6 +109,7 @@ class AntiVM(Module):
                     hwid=UserInfo.HWID,
                 )
             if self.exit:
+                self.logger.info("Exiting due to blacklisted HWID")
                 os._exit(1)
 
         if UserInfo.USERNAME in self.PC_USERNAMES:
@@ -113,6 +125,7 @@ class AntiVM(Module):
                     pc_username=UserInfo.USERNAME,
                 )
             if self.exit:
+                self.logger.info("Exiting due to blacklisted PC username")
                 os._exit(1)
 
         if UserInfo.PC_NAME in self.PC_NAMES:
@@ -128,14 +141,16 @@ class AntiVM(Module):
                     pc_name=UserInfo.PC_NAME,
                 )
             if self.exit:
+                self.logger.info("Exiting due to blacklisted PC name")
                 os._exit(1)
 
         if UserInfo.IP in self.IPS:
             self.logger.info(f"Blacklisted IP: {UserInfo.IP}")
             if self.report:
                 self.webhook.send(
-                    f"Blacklisted IP: `{
-                        UserInfo.IP}`", self.name)
+                    f"Blacklisted IP: `{UserInfo.IP}`",
+                    self.name,
+                )
                 self.event.dispatch(
                     ["blacklisted_ip", "pyprotector_detect"],
                     "Blacklisted IP Detected",
@@ -143,14 +158,16 @@ class AntiVM(Module):
                     ip=UserInfo.IP,
                 )
             if self.exit:
+                self.logger.info("Exiting due to blacklisted IP")
                 os._exit(1)
 
         if UserInfo.MAC in self.MACS:
             self.logger.info(f"Blacklisted MAC: {UserInfo.MAC}")
             if self.report:
                 self.webhook.send(
-                    f"Blacklisted MAC: `{
-                        UserInfo.MAC}`", self.name)
+                    f"Blacklisted MAC: `{UserInfo.MAC}`",
+                    self.name,
+                )
                 self.event.dispatch(
                     ["blacklisted_mac_address", "pyprotector_detect"],
                     "Blacklisted MAC Detected",
@@ -158,14 +175,16 @@ class AntiVM(Module):
                     mac_addr=UserInfo.MAC,
                 )
             if self.exit:
+                self.logger.info("Exiting due to blacklisted MAC address")
                 os._exit(1)
 
         if UserInfo.GPU in self.GPUS:
             self.logger.info(f"Blacklisted GPU: {UserInfo.GPU}")
             if self.report:
                 self.webhook.send(
-                    f"Blacklisted GPU: `{
-                        UserInfo.GPU}`", self.name)
+                    f"Blacklisted GPU: `{UserInfo.GPU}`",
+                    self.name,
+                )
                 self.event.dispatch(
                     ["blacklisted_gpu", "pyprotector_detect"],
                     "Blacklisted GPU Detected",
@@ -173,17 +192,9 @@ class AntiVM(Module):
                     gpu=UserInfo.GPU,
                 )
             if self.exit:
+                self.logger.info("Exiting due to blacklisted GPU")
                 os._exit(1)
 
-    @lru_cache
-    def CheckVirtualEnv(self) -> None:
-        """
-        Checks sys.prefix
-        """
-        if self._get_base_prefix_compat() != sys.prefix and self.exit:
-            os._exit(1)
-
-    @lru_cache
     def CheckRegistry(self) -> None:
         """
         Checks VMWare Registry Keys
@@ -207,6 +218,7 @@ class AntiVM(Module):
                     reg2=reg2,
                 )
             if self.exit:
+                self.logger.info("Exiting due to VMWare Registry Detection")
                 os._exit(1)
 
     def CheckMacAddress(self) -> None:
@@ -224,9 +236,9 @@ class AntiVM(Module):
                     mac_addr=UserInfo.MAC,
                 )
             if self.exit:
+                self.logger.info("Exiting due to VMWare MAC Address Detection")
                 os._exit(1)
 
-    @lru_cache
     def CheckScreenSize(self) -> None:
         """
         Checks the screen size for being less than 200x200
@@ -236,8 +248,7 @@ class AntiVM(Module):
         if x <= 200 or y <= 200:
             self.logger.info(f"Screen Size X: {x} | Y: {y}")
             if self.report:
-                self.webhook.send(
-                    f"Screen Size Is: **x**: {x} | **y**: {y}", self.name)
+                self.webhook.send(f"Screen Size Is: **x**: {x} | **y**: {y}", self.name)
                 self.event.dispatch(
                     ["screen_size", "pyprotector_detect"],
                     f"Screen Size X: {x} | Y: {y}",
@@ -246,6 +257,7 @@ class AntiVM(Module):
                     y=y,
                 )
             if self.exit:
+                self.logger.info("Exiting due to small screen size")
                 os._exit(1)
 
     def CheckProcessesAndFiles(self) -> None:
@@ -255,8 +267,7 @@ class AntiVM(Module):
         vmware_dll: str = os.path.join(
             os.environ["SystemRoot"], "System32\\vmGuestLib.dll"
         )
-        virtualbox_dll: str = os.path.join(
-            os.environ["SystemRoot"], "vboxmrxnp.dll")
+        virtualbox_dll: str = os.path.join(os.environ["SystemRoot"], "vboxmrxnp.dll")
 
         process: str = os.popen(
             'TASKLIST /FI "STATUS eq RUNNING" | find /V "Image Name" | find /V "="'
@@ -265,12 +276,7 @@ class AntiVM(Module):
 
         for processNames in process.split(" "):
             if ".exe" in processNames:
-                processList.append(
-                    processNames.replace(
-                        "K\n",
-                        "").replace(
-                        "\n",
-                        ""))
+                processList.append(processNames.replace("K\n", "").replace("\n", ""))
 
         if any(Lists.VIRTUAL_MACHINE_PROCESSES) in processList:
             self.logger.info("Blacklisted Virtual Machine Process Running")
@@ -285,6 +291,7 @@ class AntiVM(Module):
                     processes=processList,
                 )
             if self.exit:
+                self.logger.info("Exiting due to blacklisted VM process")
                 os._exit(1)
 
         if os.path.exists(vmware_dll):
@@ -298,6 +305,7 @@ class AntiVM(Module):
                     dll=vmware_dll,
                 )
             if self.exit:
+                self.logger.info("Exiting due to VMWare DLL Detection")
                 os._exit(1)
 
         if os.path.exists(virtualbox_dll):
@@ -311,12 +319,12 @@ class AntiVM(Module):
                     dll=virtualbox_dll,
                 )
             if self.exit:
+                self.logger.info("Exiting due to VirtualBox DLL Detection")
                 os._exit(1)
 
     def StartChecks(self) -> None:
         if self.report:
             self.logger.info("Starting VM Checks")
-        self.CheckVirtualEnv()
         self.CheckRegistry()
         self.CheckMacAddress()
         self.CheckScreenSize()

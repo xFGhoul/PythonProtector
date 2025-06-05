@@ -5,18 +5,18 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "command_runner>=1.5.0",
-    "cryptography>=44.0.0",
+    "command-runner>=1.7.4",
+    "cryptography>=45.0.3",
     "discord_webhook>=1.1.0",
     "httpx>=0.28.1",
-    "humanize>=4.6.0",
+    "humanize>=4.12.3",
     "loguru>=0.7.3",
     "observable>=1.0.3",
-    "psutil>=6.1.0",
-    "py_cpuinfo>=9.0.0",
-    "pywin32>=308",
+    "psutil>=7.0.0",
+    "py-cpuinfo>=9.0.0",
+    "pywin32>=310",
     "requests>=2.31.0",
-    "setuptools>=75.6.0",
+    "setuptools>=80.9.0",
     "WMI>=1.5.1",
     "Pillow>=11.0.0",
 ]

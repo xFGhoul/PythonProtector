@@ -1,10 +1,10 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -12,7 +12,7 @@ Made With ❤️ By Ghoul & Marci
 import io
 
 from io import BytesIO
-from PIL import Image, ImageGrab
+from PIL import ImageGrab
 
 from base64 import b64decode
 from typing import Optional, List
@@ -24,13 +24,11 @@ from ..constants import EmbedConfig, LoggingInfo, UserInfo
 
 class Webhook:
     def __init__(
-            self,
-            webhook_url: str,
-            logs_path: Optional[str],
-            screenshot: Optional[bool]) -> None:
+        self, webhook_url: str, logs_path: str, screenshot: Optional[bool]
+    ) -> None:
         self.webhook_url: str = webhook_url
         self.logs_path: str = logs_path
-        self.screenshot: bool = screenshot
+        self.screenshot: bool = screenshot if screenshot else False
 
     def TakeScreenshot(self) -> bytes:
         """
@@ -39,18 +37,16 @@ class Webhook:
         Returns:
           A byte array of the screenshot.
         """
-        screenshot: Image = ImageGrab.grab(
-            bbox=None,
-            include_layered_windows=False,
-            all_screens=True,
-            xdisplay=None)
+        screenshot = ImageGrab.grab(
+            bbox=None, include_layered_windows=False, all_screens=True, xdisplay=None
+        )
 
-        screenshot_bytes_array: BytesIO = io.BytesIO()
+        screenshot_bytes_array = io.BytesIO()
         screenshot.save(screenshot_bytes_array, format="PNG")
         screenshot_bytes_array = screenshot_bytes_array.getvalue()
         return screenshot_bytes_array
 
-    def DecryptLogs(self) -> bytes:
+    def DecryptLogs(self) -> str:
         """
         Decrypts Logs File
 
@@ -64,8 +60,7 @@ class Webhook:
                 if not line.strip():
                     continue
                 encrypted_message: str = line.split(" ")[4]
-                encoded_message: bytes = b64decode(
-                    encrypted_message.encode("latin1"))
+                encoded_message: bytes = b64decode(encrypted_message.encode("latin1"))
                 decrypted_message: str = LoggingInfo.CIPHER.decrypt(
                     encoded_message
                 ).decode("utf-8")
@@ -87,23 +82,19 @@ class Webhook:
         )
 
         webhook.add_file(
-            file=self.DecryptLogs(), filename=f"{
-                UserInfo.USERNAME}-[Security].log")
+            file=self.DecryptLogs().encode("utf-8"),
+            filename=f"{UserInfo.USERNAME}-[Security].log",
+        )
 
         embed: DiscordEmbed = DiscordEmbed(
             title=EmbedConfig.TITLE, color=EmbedConfig.COLOR
         )
 
         if self.screenshot:
-            webhook.add_file(
-                file=self.TakeScreenshot(),
-                filename="screenshot.jpg")
+            webhook.add_file(file=self.TakeScreenshot(), filename="screenshot.jpg")
             embed.set_image(url="attachment://screenshot.jpg")
 
-        embed.add_embed_field(
-            name="User",
-            value=UserInfo.USERNAME,
-            inline=True)
+        embed.add_embed_field(name="User", value=UserInfo.USERNAME, inline=True)
         embed.add_embed_field(name="IP", value=UserInfo.IP, inline=True)
         embed.add_embed_field(name="Module", value=module, inline=True)
 
@@ -112,9 +103,9 @@ class Webhook:
 
         embed.set_thumbnail(url=EmbedConfig.ICON)
         embed.set_footer(
-            text=f"PythonProtector | {
-                EmbedConfig.VERSION}",
-            icon_url=EmbedConfig.ICON)
+            text=f"PythonProtector | {EmbedConfig.VERSION}",
+            icon_url=EmbedConfig.ICON,
+        )
 
         webhook.add_embed(embed)
 

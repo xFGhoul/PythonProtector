@@ -1,28 +1,23 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
 
 import ctypes
 import os
-import sys
 import time
 
-import pkg_resources
 import socket
 import struct
 import requests
 import psutil
 import win32api
-
-from functools import lru_cache
-from typing import Literal
 
 from ..types import Event, Logger
 from ..abc import Module
@@ -33,12 +28,8 @@ from ..utils.webhook import Webhook
 
 class Miscellaneous(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -50,10 +41,9 @@ class Miscellaneous(Module):
         return self.__class__.__name__
 
     @property
-    def version(self) -> int:
+    def version(self) -> float:
         return 1.0
 
-    @lru_cache
     def CheckInternet(self) -> None:
         """
         Checks If There Is A Valid Connection To The Internet
@@ -64,11 +54,11 @@ class Miscellaneous(Module):
                 if self.report:
                     self.logger.info("CheckInternet Failed")
                 if self.exit:
+                    self.logger.info("Exiting Due To No Internet Connection")
                     os._exit(1)
             else:
                 pass
 
-    @lru_cache
     def CheckRAM(self) -> None:
         """Checks RAM Size For Being Less Than 4 GB"""
         memory: int = psutil.virtual_memory().total
@@ -86,6 +76,7 @@ class Miscellaneous(Module):
                     ram=memory,
                 )
             if self.exit:
+                self.logger.info("Exiting Due To Insufficient RAM")
                 os._exit(1)
 
     def CheckIsDebuggerPresent(self) -> None:
@@ -93,7 +84,7 @@ class Miscellaneous(Module):
         isDebuggerPresent = ctypes.windll.kernel32.IsDebuggerPresent()
 
         if isDebuggerPresent:
-            self.logger.send("IsDebuggerPresent Returned True")
+            self.logger.info("IsDebuggerPresent Returned True")
             if self.report:
                 self.webhook.send("IsDebuggerPresent Returned True", self.name)
                 self.event.dispatch(
@@ -102,6 +93,7 @@ class Miscellaneous(Module):
                     self.name,
                 )
             if self.exit:
+                self.logger.info("Exiting Due To Debugger Presence")
                 os._exit(1)
 
         if (
@@ -110,7 +102,7 @@ class Miscellaneous(Module):
             )
             != 0
         ):
-            self.logger.send("CheckRemoteDebuggerPresent Returned True")
+            self.logger.info("CheckRemoteDebuggerPresent Returned True")
             if self.report:
                 self.webhook.send(
                     "CheckRemoteDebuggerPresent Returned True",
@@ -122,22 +114,23 @@ class Miscellaneous(Module):
                     self.name,
                 )
             if self.exit:
+                self.logger.info("Exiting Due To Remote Debugger Presence")
                 os._exit(1)
 
-    @lru_cache
     def CheckDiskSize(self) -> None:
         """Check Disk Size"""
-        minDiskSizeGB: Literal[50] = 50
-        if len(sys.argv) > 1:
-            minDiskSizeGB = float(sys.argv[1])
+        minDiskSizeGB: float = 50.0
+
         _, diskSizeBytes, _ = win32api.GetDiskFreeSpaceEx()
-        diskSizeGB: int = diskSizeBytes / 1073741824
+        diskSizeGB: float = diskSizeBytes / 1073741824
 
         if diskSizeGB < minDiskSizeGB:
             self.logger.info("Disk Check Failed")
             if self.report:
                 self.webhook.send(
-                    f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum")
+                    f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum",
+                    self.name,
+                )
                 self.event.dispatch(
                     ["disk_size_check", "pyprotector_detect"],
                     f"The Current Disk Size Is {diskSizeGB}GB, Which Is Less Than The Minimum",
@@ -145,6 +138,7 @@ class Miscellaneous(Module):
                     disk_size=diskSizeGB,
                 )
             if self.exit:
+                self.logger.info("Exiting Due To Insufficient Disk Space")
                 os._exit(1)
 
     def KillTasks(self) -> None:
@@ -153,8 +147,7 @@ class Miscellaneous(Module):
         os.system("taskkill /f /im HTTPDebuggerSvc.exe >nul 2>&1")
         os.system('taskkill /FI "IMAGENAME eq cheatengine*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq httpdebugger*" /IM * /F /T >nul 2>&1')
-        os.system(
-            'taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq fiddler*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq wireshark*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq rawshark*" /IM * /F /T >nul 2>&1')
@@ -162,8 +155,7 @@ class Miscellaneous(Module):
         os.system('taskkill /FI "IMAGENAME eq cheatengine*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq ida*" /IM * /F /T >nul 2>&1')
         os.system('taskkill /FI "IMAGENAME eq httpdebugger*" /IM * /F /T >nul 2>&1')
-        os.system(
-            'taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
+        os.system('taskkill /FI "IMAGENAME eq processhacker*" /IM * /F /T >nul 2>&1')
         os.system("sc stop HTTPDebuggerPro >nul 2>&1")
         os.system("sc stop KProcessHacker3 >nul 2>&1")
         os.system("sc stop KProcessHacker2 >nul 2>&1")
@@ -175,7 +167,6 @@ class Miscellaneous(Module):
             'cmd.exe /c @RD /S /Q "C:\\Users\\%username%\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE" >nul 2>&1'
         )
 
-    @lru_cache
     def CheckPaths(self) -> None:
         """Checks Paths on Computer Against Blacklisted Paths"""
         for path in Lists.BLACKLISTED_PATHS:
@@ -190,54 +181,11 @@ class Miscellaneous(Module):
                         path=path,
                     )
                 if self.exit:
+                    self.logger.info(f"Exiting Due To Blacklisted Path: {path}")
                     os._exit(1)
             else:
                 pass
 
-    def CheckImports(self) -> None:
-        """Checks Current Installed PyPi Packages For Blacklisted Packages"""
-        for package in Lists.BLACKLISTED_IMPORTS:
-            try:
-                dist = pkg_resources.get_distribution(package)
-                if dist:
-                    self.logger.info(f"{package} Was Found Installed")
-                    if self.report:
-                        self.webhook.send(
-                            f"`{package}` Was Found Installed",
-                            self.name,
-                        )
-                        self.event.dispatch(
-                            ["blacklisted_import", "pyprotector_detect"],
-                            f"{package} Was Found Installed",
-                            self.name,
-                            package=package,
-                            dist=dist,
-                        )
-                    if self.exit:
-                        os._exit(1)
-                else:
-                    pass
-            except pkg_resources.DistributionNotFound:
-                pass
-
-    def CheckOutPutDebugString(self) -> None:
-        """Checks OutPutDebugString"""
-        win32api.SetLastError(0)
-        win32api.OutputDebugString("PythonProtector Intruding...")
-        if win32api.GetLastError() != 0:
-            self.logger.info("OutputDebugString Is Not 0")
-            if self.report:
-                self.webhook.send(
-                    "OutputDebugString Not Equal To 0", self.name)
-                self.event.dispatch(
-                    ["output_debug_string", "pyprotector_detect"],
-                    "OutputDebugString Not Equal To 0",
-                    self.name,
-                )
-            if self.exit:
-                os._exit(1)
-
-    @lru_cache
     def CheckIPs(self) -> None:
         """Checks User IP Against Blacklisted List"""
         if UserInfo.IP in Lists.BLACKLISTED_IPS:
@@ -253,14 +201,21 @@ class Miscellaneous(Module):
                     ip=UserInfo.IP,
                 )
             if self.exit:
+                self.logger.info("Exiting Due To Blacklisted IP Address")
                 os._exit(1)
         else:
             pass
 
-    @lru_cache
     def CheckCPUCores(self) -> None:
         """Checks CPU Core Count For Being Less Than 1"""
-        if int(psutil.cpu_count()) <= 1:
+
+        cpu_count = psutil.cpu_count()
+
+        if cpu_count is None:
+            self.logger.warning("Could Not Determine CPU Core Count")
+            return
+
+        if cpu_count <= 1:
             self.logger.info("CPU Core Count Is Less Than Or Equal To 1")
             if self.report:
                 self.webhook.send(
@@ -272,6 +227,7 @@ class Miscellaneous(Module):
                     self.name,
                 )
             if self.exit:
+                self.logger.info("Exiting Due To Insufficient CPU Cores")
                 os._exit(1)
 
     def IsUsingProxy(self) -> None:
@@ -290,6 +246,7 @@ class Miscellaneous(Module):
                         header=header,
                     )
                 if self.exit:
+                    self.logger.info("Exiting Due To Proxy Headers Being Used")
                     os._exit(1)
 
         if UserInfo.IP in Lists.PROXY_IPS:
@@ -303,14 +260,14 @@ class Miscellaneous(Module):
                     ip=UserInfo.IP,
                 )
             if self.exit:
+                self.logger.info("Exiting Due To Proxy IP Being Used")
                 os._exit(1)
 
         try:
             _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             _socket.settimeout(5)
             _socket.connect(("check.torproject.org", 9050))
-            _socket.send(
-                b"GET / HTTP/1.1\r\nHost: check.torproject.org\r\n\r\n")
+            _socket.send(b"GET / HTTP/1.1\r\nHost: check.torproject.org\r\n\r\n")
             data: bytes = _socket.recv(1024)
             if "Congratulations" in data.decode():
                 self.logger.info("Tor Network Detected")
@@ -322,6 +279,7 @@ class Miscellaneous(Module):
                         self.name,
                     )
                 if self.exit:
+                    self.logger.info("Exiting Due To Tor Network Detection")
                     os._exit(1)
         except Exception:
             pass
@@ -331,14 +289,14 @@ class Miscellaneous(Module):
             if IP >> 24 in [0, 10, 100, 127, 169, 172, 192]:
                 self.logger.info("Transparent Proxies Detected")
                 if self.report:
-                    self.webhook.send(
-                        "Transparent Proxies Detected", self.name)
+                    self.webhook.send("Transparent Proxies Detected", self.name)
                     self.event.dispatch(
                         ["transparent_proxies", "pyprotector_detect"],
                         "Transparent Proxies Detected",
                         self.name,
                     )
                 if self.exit:
+                    self.logger.info("Exiting Due To Transparent Proxies Detection")
                     os._exit(1)
         except Exception:
             pass
@@ -346,13 +304,11 @@ class Miscellaneous(Module):
     def StartChecks(self) -> None:
         if self.report:
             self.logger.info("Starting Miscellaneous Checks")
-        self.CheckImports()
         self.CheckPaths()
         self.CheckIPs()
         self.CheckCPUCores()
         self.CheckRAM()
         self.CheckIsDebuggerPresent()
-        self.CheckOutPutDebugString()
         self.CheckDiskSize()
         self.KillTasks()
         self.IsUsingProxy()

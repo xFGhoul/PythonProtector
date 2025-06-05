@@ -1,10 +1,10 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -23,12 +23,8 @@ from ..utils.webhook import Webhook
 
 class AntiDump(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -43,7 +39,7 @@ class AntiDump(Module):
         return "Anti Dump"
 
     @property
-    def version(self) -> int:
+    def version(self) -> float:
         return 1.0
 
     def ErasePEHeaderFromMemory(self) -> None:
@@ -57,12 +53,9 @@ class AntiDump(Module):
         self.kernel32.VirtualProtect(
             ctypes.pointer(baseAddress), 4096, 0x04, ctypes.pointer(oldProtect)
         )
-        ctypes.memset(
-            ctypes.pointer(baseAddress),
-            4096,
-            ctypes.sizeof(baseAddress))
+        ctypes.memset(ctypes.pointer(baseAddress), 4096, ctypes.sizeof(baseAddress))
         self.event.dispatch(
-            "pe_header_erased", "PE Header Erased From Memory", self.name
+            ["pe_header_erased"], "PE Header Erased From Memory", self.name
         )
 
     def StartChecks(self) -> None:

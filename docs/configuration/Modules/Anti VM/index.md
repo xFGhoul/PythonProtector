@@ -6,10 +6,6 @@
 
 Check Blacklisted Lists To Compare Data like `HWID`, `IP`, `PC_NAME`, etc.
 
-### `CheckVirtualEnv`
-
-Checks if `self._get_base_prefix_compat() != sys.prefix`
-
 ### `CheckRegistry`
 
 Checks Registry For VMWare Software

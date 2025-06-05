@@ -1,10 +1,10 @@
 """
-	____          ____                __               __
+        ____          ____                __               __
    / __ \\ __  __ / __ \\ _____ ____   / /_ ___   _____ / /_
   / /_/ // / / // /_/ // ___// __ \\ / __// _ \\ / ___// __/
  / ____// /_/ // ____// /   / /_/ // /_ /  __// /__ / /_
 /_/     \\__, //_/    /_/    \\____/ \\__/ \\___/ \\___/ \\__/
-	   /____/
+           /____/
 
 Made With ❤️ By Ghoul & Marci
 """
@@ -24,12 +24,8 @@ from ..utils.webhook import Webhook
 
 class AntiDLL(Module):
     def __init__(
-            self,
-            webhook: Webhook,
-            logger: Logger,
-            exit: bool,
-            report: bool,
-            event: Event) -> None:
+        self, webhook: Webhook, logger: Logger, exit: bool, report: bool, event: Event
+    ) -> None:
         self.webhook: Webhook = webhook
         self.logger: Logger = logger
         self.exit: bool = exit
@@ -41,7 +37,7 @@ class AntiDLL(Module):
         return "Anti DLL"
 
     @property
-    def version(self) -> int:
+    def version(self) -> float:
         return 1.0
 
     def BlockDLLs(self) -> None:
@@ -56,11 +52,12 @@ class AntiDLL(Module):
                         hProcess: int = win32api.OpenProcess(0x0410, 0, pid)
                         try:
                             curProcessDLLs: tuple = win32process.EnumProcessModules(
-                                hProcess)
+                                hProcess
+                            )
                             for dll in curProcessDLLs:
                                 dllName: str = str(
-                                    win32process.GetModuleFileNameEx(
-                                        hProcess, dll)).lower()
+                                    win32process.GetModuleFileNameEx(hProcess, dll)
+                                ).lower()
                                 for sandboxDLL in Lists.BLACKLISTED_DLLS:
                                     if (
                                         sandboxDLL in dllName
@@ -74,7 +71,8 @@ class AntiDLL(Module):
                         raise e
                 if EvidenceOfSandbox:
                     self.logger.info(
-                        f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded")
+                        f"The Following DLL's: {EvidenceOfSandbox} Were Found Loaded"
+                    )
                     if self.report:
                         self.webhook.send(
                             f"The following DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
@@ -84,10 +82,10 @@ class AntiDLL(Module):
                             ["dll_attach", "pyprotector_detect"],
                             f"The following DLLs were discovered loaded in processes running on the system. DLLS: {EvidenceOfSandbox}",
                             self.name,
-                            {EvidenceOfSandbox},
                             dlls=EvidenceOfSandbox,
                         )
                     if self.exit:
+                        self.logger.info("Exiting due to DLL detection")
                         os._exit(1)
             except BaseException:
                 pass

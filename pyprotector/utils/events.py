@@ -17,12 +17,7 @@ class ProtectorObservable:
     def __init__(self) -> None:
         self.obs: Observable = Observable()
 
-    def dispatch(
-            self,
-            events: List[str],
-            text: str,
-            module: str,
-            **kwargs) -> None:
+    def dispatch(self, events: List[str], text: str, module: str, **kwargs) -> None:
         """
         It triggers an event.
 
