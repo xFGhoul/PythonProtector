@@ -11,7 +11,6 @@ Made With ❤️ By Ghoul & Marci
 
 import io
 
-from io import BytesIO
 from PIL import ImageGrab
 
 from base64 import b64decode
