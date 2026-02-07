@@ -84,6 +84,9 @@ You can find more examples in the [examples](https://github.com/xFGhoul/PythonPr
 `├──`[`pyprotector`](https://github.com/xFGhoul/PythonProtector/blob/dev/pyprotector) — Source Code Of PythonProtector<br>
 `├──`[`scripts`](https://github.com/xFGhoul/PythonProtector/blob/dev/scripts) — Scripts Used In The Development Process<br>
 
+## Disclaimer
+The tool for educational purpose only, Using it to obfuscate malwares or malicious software illegal, i'm not responsible for any misuse
+
 ## Links
 
 - [Documentation](http://ghouldev.me/PythonProtector/)
